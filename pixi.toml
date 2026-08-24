@@ -1,0 +1,21 @@
+[workspace]
+authors = ["Davide Maspero"]
+channels = ["conda-forge"]
+name = "SITO_WEB_FOTO"
+platforms = ["win-64"]
+version = "0.1.0"
+
+[tasks]
+build = "python tools/build_photos.py"
+rebuild = "python tools/build_photos.py --force"
+serve = "python tools/serve.py"
+
+[tasks.watermark-help]
+description = "Show watermark CLI options"
+cmd = "python tools/build_photos.py --help"
+
+[dependencies]
+python = "3.12.*"
+pillow = ">=12.3.0,<13"
+cairosvg = ">=2.9.0,<3"
+gh = ">=2.98.0,<3"

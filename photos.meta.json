@@ -1,0 +1,386 @@
+{
+  "photos": [
+    {
+      "file": "01-11-2023_001.jpg",
+      "category": "landscape",
+      "tags": [
+        "mountains",
+        "valley",
+        "shadow",
+        "barcelona",
+        "spain"
+      ],
+      "featured": false
+    },
+    {
+      "file": "09072022-IMG_0051.jpg",
+      "category": "landscape",
+      "tags": [
+        "sea",
+        "costa brava"
+      ],
+      "featured": false
+    },
+    {
+      "file": "13032022-13032022-IMG_0350.jpg",
+      "category": "landscape",
+      "tags": [
+        "sea",
+        "storm",
+        "cloudy"
+      ],
+      "featured": false
+    },
+    {
+      "file": "16-03-2024_001-3.jpg",
+      "category": "landscape",
+      "tags": [
+        "sea",
+        "costa brava",
+        "rocks"
+      ],
+      "featured": false
+    },
+    {
+      "file": "16-03-2024_013.jpg",
+      "category": "landscape",
+      "tags": [
+        "sea",
+        "costa brava",
+        "rocks"
+      ],
+      "featured": false
+    },
+    {
+      "file": "16-03-2024_058.jpg",
+      "category": "landscape",
+      "tags": [
+        "sea",
+        "costa brava",
+        "tree"
+      ],
+      "featured": false
+    },
+    {
+      "file": "16082021_1054.jpg",
+      "category": "landscape",
+      "tags": [
+        "croatia",
+        "plitvice lakes",
+        "lakes"
+      ],
+      "featured": false
+    },
+    {
+      "file": "16082021_1113.jpg",
+      "category": "landscape",
+      "tags": [
+        "croatia",
+        "plitvice lakes",
+        "waterfall"
+      ],
+      "featured": false
+    },
+    {
+      "file": "17082021_1054.jpg",
+      "category": "landscape",
+      "tags": [
+        "croatia",
+        "plitvice lakes",
+        "waterfall"
+      ],
+      "featured": false
+    },
+    {
+      "file": "17082021_1115.jpg",
+      "category": "landscape",
+      "tags": [
+        "croatia",
+        "plitvice lakes",
+        "waterfall"
+      ],
+      "featured": false
+    },
+    {
+      "file": "17082021_1227.jpg",
+      "category": "landscape",
+      "tags": [
+        "croatia",
+        "plitvice lakes",
+        "lakes"
+      ],
+      "featured": false
+    },
+    {
+      "file": "17082021_1516.jpg",
+      "category": "landscape",
+      "tags": [
+        "croatia",
+        "plitvice lakes",
+        "lakes"
+      ],
+      "featured": true
+    },
+    {
+      "file": "19-11-2023_001-2.jpg",
+      "category": "urban",
+      "tags": [
+        "badalona",
+        "tres torres",
+        "spain"
+      ],
+      "featured": true
+    },
+    {
+      "file": "20240801-IMG_6917-Enhanced-NR.jpg",
+      "category": "animals",
+      "tags": [
+        "wildlife",
+        "dolphin",
+        "portugal"
+      ],
+      "featured": false
+    },
+    {
+      "file": "20240916-IMG_9604-Enhanced-NR.jpg",
+      "category": "event",
+      "tags": [
+        "sea",
+        "barcelona",
+        "2025",
+        "american cup"
+      ],
+      "featured": true
+    },
+    {
+      "file": "20250119-_B0A2112.jpg",
+      "category": "landscape",
+      "tags": [
+        "montserrat",
+        "barcelona",
+        "trekking"
+      ],
+      "featured": false
+    },
+    {
+      "file": "20250215-_6M22912-Edit.jpg",
+      "category": "animals",
+      "tags": [
+        "zoo",
+        "barcelona",
+        "bird"
+      ],
+      "featured": false
+    },
+    {
+      "file": "20250326-_6M24742-2.jpg",
+      "category": "animals",
+      "tags": [
+        "zoo",
+        "barcelona",
+        "bird"
+      ],
+      "featured": true
+    },
+    {
+      "file": "20250428-_6M26105-6.jpg",
+      "category": "travel",
+      "tags": [
+        "seul",
+        "royal palace",
+        "lake"
+      ],
+      "featured": true
+    },
+    {
+      "file": "20250609-_6M26365-2.jpg",
+      "category": "animals",
+      "tags": [
+        "zoo",
+        "barcelona",
+        "bird"
+      ],
+      "featured": false
+    },
+    {
+      "file": "20250609-_6M26551.jpg",
+      "category": "animals",
+      "tags": [
+        "tiger",
+        "zoo",
+        "barcelona",
+        "fun"
+      ],
+      "featured": false
+    },
+    {
+      "file": "20250609-_6M26655-2.jpg",
+      "category": "animals",
+      "tags": [
+        "zoo",
+        "barcelona"
+      ],
+      "featured": false
+    },
+    {
+      "file": "20250804-_6M27081.jpg",
+      "category": "landscape",
+      "tags": [
+        "donostia",
+        "basque country",
+        "spain"
+      ],
+      "featured": false
+    },
+    {
+      "file": "20250811-_6M28805.jpg",
+      "category": "landscape",
+      "tags": [
+        "portugal",
+        "picos d'europa",
+        "covadonga's lake",
+        "lakes"
+      ],
+      "featured": true
+    },
+    {
+      "file": "20250824-_6M21691.jpg",
+      "category": "animals",
+      "tags": [
+        "wildlife",
+        "frog",
+        "cataluña"
+      ],
+      "featured": false
+    },
+    {
+      "file": "20260105-_6M23363.jpg",
+      "category": "landscape",
+      "tags": [
+        "sea",
+        "rocks",
+        "storm",
+        "wind",
+        "minorca",
+        "spain"
+      ],
+      "featured": false
+    },
+    {
+      "file": "20260221-_6M24624.jpg",
+      "category": "animals",
+      "tags": [
+        "zoo",
+        "barcelona"
+      ],
+      "featured": false
+    },
+    {
+      "file": "20260502-_6M27702.jpg",
+      "category": "animals",
+      "tags": [
+        "delta ebro",
+        "bird",
+        "cataluña"
+      ],
+      "featured": false
+    },
+    {
+      "file": "20260502-_6M28183.jpg",
+      "category": "animals",
+      "tags": [
+        "delta ebro",
+        "bird",
+        "cataluña"
+      ],
+      "featured": false
+    },
+    {
+      "file": "30-12-2023_001-2.jpg",
+      "category": "landscape",
+      "tags": [
+        "slovenia",
+        "lake",
+        "sunset"
+      ],
+      "featured": false
+    },
+    {
+      "file": "30-12-2023_001-3-denoise-sharpen.jpeg",
+      "category": "travel",
+      "tags": [
+        "slovenia",
+        "lake"
+      ],
+      "featured": true
+    },
+    {
+      "file": "CANON_20230802_2.jpg",
+      "category": "travel",
+      "tags": [
+        "sea",
+        "beach",
+        "normady",
+        "blue"
+      ],
+      "featured": false
+    },
+    {
+      "file": "CANON_20231008_1-denoise.jpeg",
+      "category": "night",
+      "tags": [
+        "cataluña",
+        "barcelona",
+        "spain",
+        "traffic",
+        "light"
+      ],
+      "featured": false
+    },
+    {
+      "file": "IMG_0019.jpg",
+      "category": "landscape",
+      "tags": [],
+      "featured": false
+    },
+    {
+      "file": "IMG_0030.jpg",
+      "category": "landscape",
+      "tags": [
+        "liguria",
+        "baia del silenzio",
+        "sea",
+        "italy"
+      ],
+      "featured": false
+    },
+    {
+      "file": "R6MII_04Aug25_001-3.jpg",
+      "category": "landscape",
+      "tags": [
+        "donostia",
+        "basque country",
+        "spain"
+      ],
+      "featured": false
+    },
+    {
+      "file": "R6MII_18Aug26_001-2.jpg",
+      "category": "macro",
+      "tags": [
+        "insect",
+        "grasshopper"
+      ],
+      "featured": false
+    }
+  ],
+  "categories": [
+    "travel",
+    "landscape",
+    "animals",
+    "night",
+    "urban",
+    "event",
+    "macro"
+  ]
+}

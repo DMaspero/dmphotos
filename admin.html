@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin &middot; Photography</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+  <header class="bar">
+    <a class="brand" href="/">Photography</a>
+    <strong class="bar-title">Admin</strong>
+    <span class="status" id="status"></span>
+    <span class="bar-spacer"></span>
+    <button type="button" id="syncMetaBtn" class="bar-action" title="Sync metadata only">Sync meta</button>
+    <button type="button" id="saveBtn" class="bar-action primary" disabled>Save changes</button>
+  </header>
+
+  <section class="login" id="login" hidden>
+    <form id="loginForm">
+      <label for="tokenInput">Admin token</label>
+      <div class="login-row">
+        <input id="tokenInput" type="password" autocomplete="off">
+        <button type="submit">Unlock</button>
+      </div>
+    </form>
+  </section>
+
+  <main class="panels" id="panels" hidden>
+
+    <!-- Site Content -->
+    <section class="panel">
+      <h2 class="panel-title">Site Content</h2>
+      <div class="form-grid">
+        <label class="field">
+          <span class="field-label">Title</span>
+          <input type="text" id="siteTitle" placeholder="Photography">
+        </label>
+        <label class="field">
+          <span class="field-label">Kicker</span>
+          <input type="text" id="siteKicker" placeholder="Selected photographs">
+        </label>
+        <label class="field">
+          <span class="field-label">Footer</span>
+          <input type="text" id="siteFooter" placeholder="Photography">
+        </label>
+        <label class="field full">
+          <span class="field-label">Description (meta)</span>
+          <input type="text" id="siteDesc" placeholder="A curated selection of photographs…">
+        </label>
+      </div>
+      <div class="panel-actions">
+        <button type="button" id="saveSiteBtn">Save site content</button>
+      </div>
+    </section>
+
+    <!-- Build -->
+    <section class="panel">
+      <h2 class="panel-title">Build</h2>
+      <div class="form-grid">
+        <label class="field">
+          <span class="field-label">Watermark</span>
+          <input type="text" id="buildWm" value="images/assets/watermark.svg">
+        </label>
+        <label class="field">
+          <span class="field-label">Size (0.0–1.0)</span>
+          <input type="number" id="buildWmSize" value="0.08" min="0.01" max="1.0" step="0.01">
+        </label>
+        <label class="field">
+          <span class="field-label">Position</span>
+          <select id="buildWmPos">
+            <option value="top-left">Top left</option>
+            <option value="top-center">Top center</option>
+            <option value="top-right">Top right</option>
+            <option value="center-left">Center left</option>
+            <option value="center">Center</option>
+            <option value="center-right">Center right</option>
+            <option value="bottom-left">Bottom left</option>
+            <option value="bottom-center" selected>Bottom center</option>
+            <option value="bottom-right">Bottom right</option>
+          </select>
+        </label>
+        <label class="field">
+          <span class="field-label">Opacity (0–255)</span>
+          <input type="number" id="buildWmOpacity" value="200" min="0" max="255">
+        </label>
+        <label class="field">
+          <span class="field-label">Color tint</span>
+          <input type="text" id="buildWmColor" placeholder="original colors">
+        </label>
+        <label class="field checkbox-field">
+          <input type="checkbox" id="buildForce">
+          <span>Force rebuild all</span>
+        </label>
+        <label class="field checkbox-field">
+          <input type="checkbox" id="buildNoWm">
+          <span>No watermark</span>
+        </label>
+      </div>
+      <div class="wm-preview" id="wmPreview">
+        <p class="wm-preview-label">Watermark preview</p>
+        <div class="wm-preview-box" id="wmPreviewBox">
+          <img class="wm-preview-img" id="wmPreviewImg" src="" alt="Preview">
+          <img class="wm-preview-overlay" id="wmPreviewOverlay" src="images/assets/watermark.svg" alt="">
+        </div>
+      </div>
+      <div class="panel-actions">
+        <button type="button" id="buildBtn">Build</button>
+      </div>
+      <pre class="build-log" id="buildLog" hidden></pre>
+    </section>
+
+    <!-- Upload -->
+    <section class="panel">
+      <h2 class="panel-title">Upload Photos</h2>
+      <div class="drop" id="drop">
+        <p>Drop images here to upload, or <label class="link" for="fileInput">browse</label></p>
+        <input type="file" id="fileInput" accept=".jpg,.jpeg" multiple hidden>
+      </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="panel">
+      <h2 class="panel-title">Categories</h2>
+      <div class="cat-list" id="catList"></div>
+      <div class="add-cat">
+        <input type="text" id="newCat" placeholder="New category name…">
+        <button type="button" id="addCatBtn">Add</button>
+      </div>
+    </section>
+
+    <!-- Photos -->
+    <section class="panel">
+      <h2 class="panel-title">Photos <span class="photo-count" id="photoCount"></span></h2>
+      <div class="toolbar" id="toolbar">
+        <input type="search" id="search" placeholder="Filter by filename…">
+        <div class="chips" id="catChips"></div>
+      </div>
+      <div class="cards" id="cards"></div>
+    </section>
+
+    <!-- Publish -->
+    <section class="panel">
+      <h2 class="panel-title">Publish to Netlify</h2>
+      <p class="panel-hint">Token + Site UUID are read from <code>secret.txt</code> (never deployed). You can override the site below.</p>
+      <div class="form-grid">
+        <label class="field">
+          <span class="field-label">Site UUID (override, optional)</span>
+          <input type="text" id="netlifySite" placeholder="from secret.txt">
+        </label>
+      </div>
+      <div class="panel-actions">
+        <button type="button" id="saveNetlifyBtn">Save site</button>
+        <button type="button" id="publishBtn" class="primary">Publish</button>
+        <button type="button" id="manualZipBtn">Manual upload</button>
+      </div>
+      <pre class="build-log" id="publishLog" hidden></pre>
+    </section>
+
+  </main>
+
+  <script src="js/admin.js"></script>
+</body>
+</html>
