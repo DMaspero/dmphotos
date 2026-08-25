@@ -52,6 +52,7 @@
   var catFilter = "all";
   var dirty = {};
   var bulkChanged = false;
+  var pendingBuildCount = 0;
 
   /* ---------------- api ---------------- */
 
@@ -449,6 +450,18 @@
 
   /* ---------------- build ---------------- */
 
+  function updateBuildBanner() {
+    var banner = document.getElementById("buildPendingBanner");
+    if (!banner) return;
+    if (pendingBuildCount > 0) {
+      banner.textContent = pendingBuildCount + " photo" + (pendingBuildCount !== 1 ? "s" : "") + " to build — click Build to generate thumbnails";
+      banner.hidden = false;
+    } else {
+      banner.textContent = "";
+      banner.hidden = true;
+    }
+  }
+
   function build() {
     status("Building…");
     el.buildBtn.disabled = true;
@@ -472,6 +485,10 @@
     }).then(function (data) {
       el.buildLog.textContent = data.log || "(no output)";
       status("Build complete (rc " + data.rc + ").", data.rc === 0);
+      if (data.rc === 0) {
+        pendingBuildCount = 0;
+        updateBuildBanner();
+      }
       return load();
     }).catch(function (e) {
       statusErr("Build failed: " + e.message);
@@ -494,15 +511,12 @@
       });
     });
     chain.then(function () {
-      status("Building after upload…");
-      return api("/admin/build", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ force: false }),
-      });
-    }).then(function (data) {
-      status("Uploaded and built " + list.length + " file(s) (rc " + data.rc + ").", true);
-      return load();
+      pendingBuildCount += list.length;
+      updateBuildBanner();
+      status("Uploaded " + list.length + " file(s) — " + pendingBuildCount + " to build.", true);
+      // scroll to Build panel so banner is visible
+      var bp = document.getElementById("buildPanel");
+      if (bp) bp.scrollIntoView({ behavior: "smooth", block: "start" });
     }).catch(function (e) {
       statusErr("Upload failed: " + e.message);
     });

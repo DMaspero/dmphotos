@@ -151,6 +151,21 @@ button.primary:hover:not(:disabled) { background: #333; }
   pointer-events: none;
 }
 
+/* ---------- Build pending banner ---------- */
+
+.build-pending {
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  color: #92400e;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.build-pending:empty,
+.build-pending[hidden] { display: none; }
+
 /* ---------- Build log ---------- */
 
 .build-log {

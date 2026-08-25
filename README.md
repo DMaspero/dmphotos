@@ -1,6 +1,6 @@
 # Photography — Static Portfolio
 
-Single-page, no-framework portfolio for Davide Maspero. Plain `index.html` + `css/style.css` + `js/main.js` + generated `js/photos.js` / `js/site.js`. Originals in `photos/` are never served — `pixi run build` resizes to `images/web/` (2048px) + `images/thumbs/` (900px) with WebP, watermark and EXIF.
+Single-page, no-framework portfolio. Plain `index.html` + `css/style.css` + `js/main.js` + generated `js/photos.js` / `js/site.js`. Originals in `photos/` are never served — `pixi run build` resizes to `images/web/` (2048px) + `images/thumbs/` (900px) with WebP, watermark and EXIF.
 
 Live: `https://dmphotos.netlify.app` — GitHub: `https://github.com/DMaspero/dmphotos` (private).
 
@@ -72,10 +72,10 @@ Top bar: `Save changes` (saves all category/photo edits via `POST /admin/meta`, 
 `Title` (nav + `<title>`), `Kicker` (hero big uppercase title), `Footer`, `Description` (meta). → **Save site content** (`POST /admin/site` → `site.meta.json` → `js/site.js`).
 
 #### Build
-Fields: `Watermark` path, `Size` (0.01–1.0), `Position`, `Opacity` 0–255, `Color tint`, `Force rebuild all`, `No watermark`. **Watermark preview** shows live overlay on first thumb (size/pos/opacity/color). **Build** → `POST /admin/build` streams log to `buildLog`.
+Amber banner `X photos to build — click Build to generate thumbnails` appears after uploads (hidden otherwise). Fields: `Watermark` path, `Size` (0.01–1.0), `Position`, `Opacity` 0–255, `Color tint`, `Force rebuild all`, `No watermark`. **Watermark preview** shows live overlay on first thumb (size/pos/opacity/color). **Build** → `POST /admin/build` (clears the banner on `rc === 0`) streams log to `buildLog`.
 
 #### Upload Photos
-Drag & drop or **browse** (`.jpg/.jpeg`). Uploads to `photos/` (`POST /admin/upload?name=`) then auto-builds.
+Drag & drop or **browse** (`.jpg/.jpeg`). Uploads to `photos/` (`POST /admin/upload?name=`) **without** auto-building — a banner in the Build panel counts `X photos to build`; click **Build** in the Build panel when ready (allows batch uploads before the heavy resize/watermark step).
 
 #### Categories
 List of chips with counts. Inline rename (change → enter), `×` to delete (photos become uncategorized). **Add** new (lowercased). Changes are staged until **Save changes**.
