@@ -5,6 +5,7 @@
 # secrets — never commit
 secret.txt
 netlify.json
+.photos_dir
 
 # generated deploy artifact
 deploy.zip

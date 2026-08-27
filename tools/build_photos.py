@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import base64
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -24,13 +25,36 @@ from PIL import Image, ImageOps, ImageDraw, ImageFont
 from PIL.ExifTags import TAGS, IFD
 
 ROOT = Path(__file__).resolve().parent.parent
-SRC_DIR = ROOT / "photos"
 WEB_DIR = ROOT / "images" / "web"
 THUMB_DIR = ROOT / "images" / "thumbs"
 META_FILE = ROOT / "photos.meta.json"
 SITE_META_FILE = ROOT / "site.meta.json"
 OUT_JS = ROOT / "js" / "photos.js"
 OUT_SITE_JS = ROOT / "js" / "site.js"
+PHOTOS_DIR_FILE = ROOT / ".photos_dir"
+
+
+def get_photos_dir() -> Path:
+    """Resolve photos folder: --photos-dir arg handled in main(), else PHOTOS_DIR env, else .photos_dir file, else photos/."""
+    import os
+    env = os.environ.get("PHOTOS_DIR", "").strip()
+    if env:
+        p = Path(env).expanduser()
+        if not p.is_absolute():
+            p = (ROOT / p).resolve()
+        return p
+    if PHOTOS_DIR_FILE.is_file():
+        raw = PHOTOS_DIR_FILE.read_text(encoding="utf-8").strip()
+        if raw:
+            p = Path(raw).expanduser()
+            if not p.is_absolute():
+                p = (ROOT / p).resolve()
+            return p
+    return ROOT / "photos"
+
+
+# Backwards compat: some code imported SRC_DIR; keep as property via function call site
+SRC_DIR = get_photos_dir()
 
 WEB_MAX = 2048
 THUMB_MAX = 900
@@ -90,7 +114,10 @@ def build_site_js() -> None:
 
 def source_images() -> list[Path]:
     exts = {".jpg", ".jpeg"}
-    return sorted(p for p in SRC_DIR.iterdir() if p.suffix.lower() in exts)
+    src = get_photos_dir()
+    if not src.is_dir():
+        return []
+    return sorted(p for p in src.iterdir() if p.suffix.lower() in exts)
 
 
 def extract_exif(src: Path) -> dict:
@@ -264,6 +291,8 @@ def process_image(src: Path, max_dim: int, out: Path, progressive: bool,
 def main() -> int:
     parser = argparse.ArgumentParser(description="Build web/thumb images from photos/")
     parser.add_argument("--force", action="store_true", help="Rebuild all images even if up to date")
+    parser.add_argument("--photos-dir", type=Path, default=None,
+                        help="Override photos folder (default: PHOTOS_DIR env or .photos_dir file or photos/)")
     parser.add_argument("--watermark", type=Path, default=WATERMARK_DEFAULT,
                         help="Path to watermark image (PNG, JPG, or SVG with embedded PNG)")
     parser.add_argument("--watermark-size", type=float, default=WATERMARK_SIZE_DEFAULT,
@@ -281,6 +310,15 @@ def main() -> int:
     parser.add_argument("--site", action="store_true", help="Also build js/site.js from site.meta.json")
     args = parser.parse_args()
 
+    # Handle --photos-dir override (also sets env for subprocesses)
+    if args.photos_dir is not None:
+        os.environ["PHOTOS_DIR"] = str(args.photos_dir)
+        # also refresh the module-level SRC_DIR for backwards compat
+        global SRC_DIR
+        SRC_DIR = Path(args.photos_dir).expanduser()
+        if not SRC_DIR.is_absolute():
+            SRC_DIR = (ROOT / SRC_DIR).resolve()
+
     # Always build site.js if --site is passed
     if args.site:
         build_site_js()
@@ -289,8 +327,10 @@ def main() -> int:
 
     srcs = source_images()
     if not srcs:
-        print("No images found in photos/")
+        print(f"No images found in {get_photos_dir()}/")
+        print("Set a different folder via --photos-dir, PHOTOS_DIR env, or .photos_dir file.")
         return 1
+    print(f"Photos source: {get_photos_dir()}")
 
     WEB_DIR.mkdir(parents=True, exist_ok=True)
     THUMB_DIR.mkdir(parents=True, exist_ok=True)

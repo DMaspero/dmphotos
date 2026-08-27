@@ -47,6 +47,14 @@
     publishLog: document.getElementById("publishLog"),
   };
 
+  var el2 = {
+    photosDirInput: document.getElementById("photosDirInput"),
+    savePhotosDirBtn: document.getElementById("savePhotosDirBtn"),
+    resetPhotosDirBtn: document.getElementById("resetPhotosDirBtn"),
+    photosDirCurrent: document.getElementById("photosDirCurrent"),
+    uploadDirHint: document.getElementById("uploadDirHint"),
+  };
+
   var photos = [];
   var cats = [];
   var catFilter = "all";
@@ -91,10 +99,36 @@
 
   /* ---------------- data ---------------- */
 
+  function loadPhotosDir() {
+    return api("/admin/photos-dir").then(function (data) {
+      if (el2.photosDirInput) el2.photosDirInput.value = data.path || "photos";
+      if (el2.photosDirCurrent) el2.photosDirCurrent.textContent = "Current: " + data.absolute + (data.exists ? "" : " (will be created)");
+      if (el2.uploadDirHint) el2.uploadDirHint.textContent = "Uploading to: " + data.absolute;
+    }).catch(function(){});
+  }
+
+  function savePhotosDir() {
+    var raw = (el2.photosDirInput.value || "").trim();
+    status("Saving photos folder…");
+    el2.savePhotosDirBtn.disabled = true;
+    api("/admin/photos-dir", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({path: raw}) })
+      .then(function (data) {
+        status("Photos folder saved: " + (data.path || "photos"), true);
+        return loadPhotosDir();
+      }).catch(function (e) { statusErr(e.message); })
+      .finally(function(){ el2.savePhotosDirBtn.disabled = false; });
+  }
+
+  function resetPhotosDir() {
+    if (el2.photosDirInput) el2.photosDirInput.value = "";
+    savePhotosDir();
+  }
+
   function load() {
     return Promise.all([
       api("/admin/data"),
       api("/admin/site"),
+      loadPhotosDir(),
     ]).then(function (results) {
       var data = results[0];
       var siteData = results[1];
@@ -736,6 +770,10 @@
     uploadFiles(el.fileInput.files);
     el.fileInput.value = "";
   });
+
+  // Photos folder
+  if (el2.savePhotosDirBtn) el2.savePhotosDirBtn.addEventListener("click", savePhotosDir);
+  if (el2.resetPhotosDirBtn) el2.resetPhotosDirBtn.addEventListener("click", resetPhotosDir);
 
   // Publish
   el.saveNetlifyBtn.addEventListener("click", saveNetlifyConfig);

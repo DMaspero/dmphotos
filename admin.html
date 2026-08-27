@@ -113,9 +113,27 @@
       <pre class="build-log" id="buildLog" hidden></pre>
     </section>
 
+    <!-- Photos folder -->
+    <section class="panel">
+      <h2 class="panel-title">Photos folder</h2>
+      <p class="panel-hint">Where raw photos are stored. Use an external cloud-synced path (e.g. Dropbox, OneDrive) to keep photos in sync across devices without committing them to Git/Netlify. The site repo stays sync'd via GitHub/Netlify.</p>
+      <div class="form-grid">
+        <label class="field full">
+          <span class="field-label">Path — absolute (C:\Cloud\Photos) or relative to site root (photos)</span>
+          <input type="text" id="photosDirInput" placeholder="photos">
+        </label>
+      </div>
+      <p class="panel-hint" id="photosDirCurrent" style="margin-top:8px;word-break:break-all"></p>
+      <div class="panel-actions">
+        <button type="button" id="savePhotosDirBtn">Save folder</button>
+        <button type="button" id="resetPhotosDirBtn">Reset to default</button>
+      </div>
+    </section>
+
     <!-- Upload -->
     <section class="panel">
       <h2 class="panel-title">Upload Photos</h2>
+      <p class="panel-hint" id="uploadDirHint"></p>
       <div class="drop" id="drop">
         <p>Drop images here to upload, or <label class="link" for="fileInput">browse</label></p>
         <input type="file" id="fileInput" accept=".jpg,.jpeg" multiple hidden>

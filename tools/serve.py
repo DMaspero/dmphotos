@@ -42,11 +42,43 @@ MAX_BODY = 500 * 1024 * 1024
 IMAGE_EXT = {".jpg", ".jpeg"}
 ALLOWED_NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*")
 
+PHOTOS_DIR_FILE = ROOT / ".photos_dir"
+
+
+def get_photos_dir() -> Path:
+    """Same resolution as build_photos.get_photos_dir(): PHOTOS_DIR env > .photos_dir file > photos/."""
+    env = os.environ.get("PHOTOS_DIR", "").strip()
+    if env:
+        p = Path(env).expanduser()
+        if not p.is_absolute():
+            p = (ROOT / p).resolve()
+        return p
+    if PHOTOS_DIR_FILE.is_file():
+        raw = PHOTOS_DIR_FILE.read_text(encoding="utf-8").strip()
+        if raw:
+            p = Path(raw).expanduser()
+            if not p.is_absolute():
+                p = (ROOT / p).resolve()
+            return p
+    return ROOT / "photos"
+
+
+def get_photos_dir_display() -> str:
+    """User-friendly display: relative if inside ROOT, else absolute; with source hint."""
+    p = get_photos_dir()
+    try:
+        rel = p.relative_to(ROOT)
+        return rel.as_posix()
+    except ValueError:
+        return str(p)
+
+
 # Files that must never be deployed to Netlify
 DEPLOY_SKIP = {
     "admin.html", "admin.css", "admin.js",
     "photos.meta.json", "site.meta.json",
     "secret.txt", "netlify.json",
+    ".photos_dir",
     "serve.py", "pixi.toml", "pixi.lock",
     "AGENTS.md", "CONTRIBUTING.md", "LICENSE.md",
     "deploy.zip",
@@ -80,17 +112,26 @@ def load_secret() -> dict[str, str]:
 
 def collect_deploy_files() -> list[str]:
     """Return deployable relative paths (no leading ./, no excluded)."""
+    # dynamic skip for custom photos dir inside ROOT
+    skip_dirs = set(DEPLOY_SKIP_DIRS)
+    try:
+        pd = get_photos_dir().resolve()
+        if str(pd).startswith(str(ROOT.resolve())) and pd != ROOT:
+            rel_pd = pd.relative_to(ROOT.resolve()).as_posix().split("/")[0]
+            skip_dirs.add(rel_pd)
+    except Exception:
+        pass
     out: list[str] = []
     for dirpath, dirnames, filenames in os.walk(ROOT):
         rel_root = os.path.relpath(dirpath, ROOT).replace("\\", "/")
         if rel_root == ".":
             rel_root = ""
         # prune before recursing
-        dirnames[:] = [d for d in dirnames if not d.startswith(".") and d not in DEPLOY_SKIP_DIRS and not d.startswith(".")]
+        dirnames[:] = [d for d in dirnames if not d.startswith(".") and d not in skip_dirs and not d.startswith(".")]
         # skip entirely if this dir is excluded
         if rel_root:
             top = rel_root.split("/")[0]
-            if top in DEPLOY_SKIP_DIRS:
+            if top in skip_dirs:
                 continue
         for f in filenames:
             if f.startswith(".") or f in DEPLOY_SKIP:
@@ -206,6 +247,11 @@ class Handler(BaseHTTPRequestHandler):
             if not self._authorized(parsed):
                 return self._json({"error": "unauthorized"}, 401)
             return self._generate_zip()
+        if path == "/admin/photos-dir":
+            if not self._authorized(parsed):
+                return self._json({"error": "unauthorized"}, 401)
+            p = get_photos_dir()
+            return self._json({"path": get_photos_dir_display(), "absolute": str(p.resolve()), "exists": p.is_dir()})
         if path.startswith("/admin/"):
             return self._json({"error": "not found"}, 404)
         self._serve_static(path)
@@ -220,14 +266,47 @@ class Handler(BaseHTTPRequestHandler):
         except ValueError as e:
             return self._json({"error": str(e)}, 413)
 
+        if path == "/admin/photos-dir":
+            try:
+                payload = json.loads(body.decode("utf-8")) if body else {}
+            except (ValueError, UnicodeDecodeError):
+                return self._json({"error": "invalid JSON"}, 400)
+            raw = (payload.get("path") or "").strip()
+            if not raw:
+                # reset to default
+                if PHOTOS_DIR_FILE.is_file():
+                    PHOTOS_DIR_FILE.unlink()
+                print("[admin] photos dir reset to photos/")
+                return self._json({"ok": True, "path": "photos"})
+            # validate: not empty, no null bytes, not traversing to ROOT parent weirdness allowed but must be absolute or relative
+            p = Path(raw).expanduser()
+            if not p.is_absolute():
+                p = (ROOT / p).resolve()
+            else:
+                p = p.resolve()
+            # ensure not ROOT itself
+            if p == ROOT.resolve():
+                return self._json({"error": "photos folder cannot be the site root"}, 400)
+            # create if not exists
+            try:
+                p.mkdir(parents=True, exist_ok=True)
+            except Exception as e:
+                return self._json({"error": f"cannot create folder: {e}"}, 400)
+            # persist as user typed (keep relative if they typed relative)
+            PHOTOS_DIR_FILE.write_text(raw + "\n", encoding="utf-8")
+            print(f"[admin] photos dir set to {raw} -> {p}")
+            return self._json({"ok": True, "path": raw, "absolute": str(p)})
+
         if path == "/admin/upload":
             name = safe_name((parse_qs(parsed.query).get("name") or [""])[0])
             if not name:
                 return self._json({"error": "invalid filename"}, 400)
             if not body:
                 return self._json({"error": "empty body"}, 400)
-            (ROOT / "photos" / name).write_bytes(body)
-            print(f"[admin] uploaded {name}")
+            photos_dir = get_photos_dir()
+            photos_dir.mkdir(parents=True, exist_ok=True)
+            (photos_dir / name).write_bytes(body)
+            print(f"[admin] uploaded {name} -> {photos_dir}")
             return self._json({"ok": True, "file": name})
 
         if path == "/admin/meta":
@@ -303,13 +382,17 @@ class Handler(BaseHTTPRequestHandler):
             name = safe_name((parse_qs(parsed.query).get("name") or [""])[0])
             if not name:
                 return self._json({"error": "invalid filename"}, 400)
-            src = ROOT / "photos" / name
+            src = get_photos_dir() / name
             if not src.is_file():
                 return self._json({"error": "not found"}, 404)
             src.unlink()
             for out in (ROOT / "images" / "web" / name, ROOT / "images" / "thumbs" / name):
                 if out.is_file():
                     out.unlink()
+                # also webp variants
+                webp = out.with_suffix(".webp")
+                if webp.is_file():
+                    webp.unlink()
             log, rc = run_build()
             print(f"[admin] deleted {name}, build rc={rc}")
             return self._json({"ok": True, "log": log, "rc": rc})

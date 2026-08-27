@@ -1,6 +1,6 @@
 # Photography — Static Portfolio
 
-Single-page, no-framework portfolio. Plain `index.html` + `css/style.css` + `js/main.js` + generated `js/photos.js` / `js/site.js`. Originals in `photos/` are never served — `pixi run build` resizes to `images/web/` (2048px) + `images/thumbs/` (900px) with WebP, watermark and EXIF.
+Single-page, no-framework portfolio. Plain `index.html` + `css/style.css` + `js/main.js` + generated `js/photos.js` / `js/site.js`. Originals in `photos/` (configurable, see below) are never served — `pixi run build` resizes to `images/web/` (2048px) + `images/thumbs/` (900px) with WebP, watermark and EXIF.
 
 Live: `https://dmphotos.netlify.app` — GitHub: `https://github.com/DMaspero/dmphotos` (private).
 
@@ -27,11 +27,19 @@ pixi install   # creates .pixi env (python, pillow, cairosvg, gh)
 Build flags (`tools/build_photos.py`):
 
 ```
---force  --watermark PATH  --watermark-size 0.12  --watermark-pos bottom-center
+--force  --photos-dir PATH  --watermark PATH  --watermark-size 0.12  --watermark-pos bottom-center
 --watermark-opacity 200  --watermark-color "#FFFFFF"  --no-watermark  --site
 ```
 
 Positions: `top-left|top-center|top-right|center-left|center|center-right|bottom-left|bottom-center|bottom-right`.
+
+**Photos folder:** `photos/` by default. Override per-device via:
+- CLI: `--photos-dir "C:\Cloud\Photos"` or `--photos-dir ../MyPhotos`
+- Env: `PHOTOS_DIR="C:\Cloud\Photos" pixi run build`
+- File: `.photos_dir` at repo root containing a single path line (git-ignored, per-device — edit in Admin → Photos folder)
+- Admin panel → **Photos folder** (preferred — creates `.photos_dir` automatically)
+
+This lets the repo stay sync'd via GitHub/Netlify while raw photos live in a cloud-synced folder (Dropbox/OneDrive/Google Drive) outside the repo.
 
 ## Run the site
 
@@ -45,9 +53,9 @@ Works also via `file://` (all paths relative, `js/photos.js` is plain JS not fet
 
 ## Photo workflow
 
-1. Drop originals (`.jpg/.jpeg`) into `photos/` or use **Admin → Upload Photos**.
-2. `photos.meta.json` is the source of truth (`categories` + per-photo `{file, category, tags[], featured}`); new files are appended with empty fields on next build.
-3. `pixi run build` → outputs to `images/web/` + `images/thumbs/` (JPEG + WebP), preserves EXIF (camera/lens/focal/aperture/shutter/ISO shown in lightbox).
+1. Drop originals (`.jpg/.jpeg`) into `photos/` (or your configured external folder) or use **Admin → Upload Photos** (writes to the active photos folder, shows banner).
+2. `photos.meta.json` is the source of truth (`categories` + per-photo `{file, category, tags[], featured}`); new files are appended with empty fields on next build. Meta stays in the repo root even when photos are external.
+3. `pixi run build` → reads from the configured photos folder → outputs to `images/web/` + `images/thumbs/` (JPEG + WebP), preserves EXIF (camera/lens/focal/aperture/shutter/ISO shown in lightbox). If `photos/` is empty, the build prints `No images found in ...` and hints at `--photos-dir`.
 
 Never edit `js/photos.js` or `js/site.js` by hand — they are generated.
 
@@ -67,6 +75,9 @@ Also read from `env NETLIFY_AUTH_TOKEN` / `SITE_UUID`. Create a Netlify personal
 Local-only. By default no token (localhost). Set `ADMIN_TOKEN=... pixi run serve` to require `?token=` or `X-Admin-Token`.
 
 Top bar: `Save changes` (saves all category/photo edits via `POST /admin/meta`, triggers rebuild) and `Sync meta`.
+
+#### Photos folder
+Exposed at the top of the panel. Shows `Current: /absolute/path (will be created)` and an input for the path (absolute `C:\Cloud\Photos` or relative `photos`). **Save folder** → `POST /admin/photos-dir` writes `.photos_dir` (git-ignored, per-device) and creates the dir; **Reset to default** deletes `.photos_dir` → `photos/`. Also available as `PHOTOS_DIR` env or `--photos-dir` flag for CLI. Uploads/deletes respect this setting; deploy zips exclude the photos folder whether inside or outside the repo.
 
 #### Site Content
 `Title` (nav + `<title>`), `Kicker` (hero big uppercase title), `Footer`, `Description` (meta). → **Save site content** (`POST /admin/site` → `site.meta.json` → `js/site.js`).
@@ -100,10 +111,10 @@ Check server stdout for `Netlify: token from secret.txt, site …` on `pixi run 
 
 ```
 index.html  admin.html  css/  js/  images/web|thumbs  photos/  photos.meta.json  site.meta.json
-tools/build_photos.py  tools/serve.py  tools/netlify.py  secret.txt  pixi.toml  favicon.ico  sw.js
+tools/build_photos.py  tools/serve.py  tools/netlify.py  secret.txt  .photos_dir  pixi.toml  favicon.ico  sw.js
 ```
 
-Deploy **only** `index.html`, `css/`, `js/`, `images/`, `favicon.ico`, `sw.js` — exclude `admin.html`, `css/admin.css`, `js/admin.js`, `tools/`, `photos/`, `secret.txt`, `.pixi/`, `deploy.zip`.
+Deploy **only** `index.html`, `css/`, `js/`, `images/`, `favicon.ico`, `sw.js` — exclude `admin.html`, `css/admin.css`, `js/admin.js`, `tools/`, `photos/` (or custom external folder), `secret.txt`, `.photos_dir`, `.pixi/`, `deploy.zip`.
 
 ## Troubleshooting
 
