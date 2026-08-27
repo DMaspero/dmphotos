@@ -2,10 +2,13 @@
 .pixi/*
 !.pixi/config.toml
 
+# raw photos — keep in external cloud folder, not in git
+photos/
+.photos_dir
+
 # secrets — never commit
 secret.txt
 netlify.json
-.photos_dir
 
 # generated deploy artifact
 deploy.zip
