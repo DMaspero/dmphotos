@@ -179,10 +179,11 @@ def is_fresh(src: Path, out: Path) -> bool:
     return out.exists() and out.stat().st_mtime >= src.stat().st_mtime
 
 
-def load_watermark_image(path: Path, color: str | None = None) -> Image.Image | None:
+def load_watermark_image(path: Path, color: str | None = None, log_fn=None) -> Image.Image | None:
     """Load the watermark: embedded PNG in SVG, vector SVG via cairosvg, or PNG/JPG directly."""
+    _log = log_fn if log_fn is not None else print
     if not path.exists():
-        print(f"Warning: watermark not found at {path}, skipping.")
+        _log(f"Warning: watermark not found at {path}, skipping.")
         return None
     if path.suffix.lower() == ".svg":
         svg_text = path.read_text(encoding="utf-8")
@@ -205,11 +206,11 @@ def load_watermark_image(path: Path, color: str | None = None) -> Image.Image | 
             from io import BytesIO
             return Image.open(BytesIO(png_data)).convert("RGBA")
         except ImportError:
-            print("Warning: cairosvg not installed, cannot render vector SVG watermark.")
-            print("  Install with: pixi add cairosvg")
+            _log("Warning: cairosvg not installed, cannot render vector SVG watermark.")
+            _log("  Install with: pixi add cairosvg")
             return None
         except Exception as e:
-            print(f"Warning: failed to render SVG watermark: {e}")
+            _log(f"Warning: failed to render SVG watermark: {e}")
             return None
     return Image.open(path).convert("RGBA")
 
@@ -288,7 +289,7 @@ def process_image(src: Path, max_dim: int, out: Path, progressive: bool,
         return im.size
 
 
-def main() -> int:
+def main(log_fn=None) -> int:
     parser = argparse.ArgumentParser(description="Build web/thumb images from photos/")
     parser.add_argument("--force", action="store_true", help="Rebuild all images even if up to date")
     parser.add_argument("--photos-dir", type=Path, default=None,
@@ -310,6 +311,8 @@ def main() -> int:
     parser.add_argument("--site", action="store_true", help="Also build js/site.js from site.meta.json")
     args = parser.parse_args()
 
+    log = log_fn if log_fn is not None else print
+
     # Handle --photos-dir override (also sets env for subprocesses)
     if args.photos_dir is not None:
         os.environ["PHOTOS_DIR"] = str(args.photos_dir)
@@ -323,14 +326,14 @@ def main() -> int:
     if args.site:
         build_site_js()
 
-    wm_img = None if args.no_watermark else load_watermark_image(args.watermark, args.watermark_color)
+    wm_img = None if args.no_watermark else load_watermark_image(args.watermark, args.watermark_color, log_fn=log)
 
     srcs = source_images()
     if not srcs:
-        print(f"No images found in {get_photos_dir()}/")
-        print("Set a different folder via --photos-dir, PHOTOS_DIR env, or .photos_dir file.")
+        log(f"No images found in {get_photos_dir()}/")
+        log("Set a different folder via --photos-dir, PHOTOS_DIR env, or .photos_dir file.")
         return 1
-    print(f"Photos source: {get_photos_dir()}")
+    log(f"Photos source: {get_photos_dir()}")
 
     WEB_DIR.mkdir(parents=True, exist_ok=True)
     THUMB_DIR.mkdir(parents=True, exist_ok=True)
@@ -340,8 +343,11 @@ def main() -> int:
     cats = meta.get("categories") or list(DEFAULT_CATEGORIES)
 
     photos = []
-    for src in srcs:
+    total = len(srcs)
+    for idx, src in enumerate(srcs, 1):
         name = src.name
+        # progress marker for streaming UI: __PROGRESS__ cur/total
+        log(f"__PROGRESS__ {idx}/{total}")
         entry = by_file.get(name, {"file": name, "category": "", "tags": []})
         if entry["category"] not in cats:
             entry["category"] = ""
@@ -353,7 +359,9 @@ def main() -> int:
         if not args.force and is_fresh(src, web_path) and is_fresh(src, thumb_path) and webp_web.exists():
             with Image.open(web_path) as im:
                 w, h = im.size
+            log(f"[{idx}/{total}] {name} — cached")
         else:
+            log(f"[{idx}/{total}] {name} — processing…")
             w, h = process_image(src, WEB_MAX, web_path, progressive=True,
                                  wm_img=wm_img, wm_size=args.watermark_size,
                                  wm_pos=args.watermark_pos, wm_opacity=args.watermark_opacity,
@@ -408,7 +416,7 @@ def main() -> int:
         encoding="utf-8",
     )
 
-    print(f"Processed {len(photos)} photos -> images/web, images/thumbs, js/photos.js")
+    log(f"Processed {len(photos)} photos -> images/web, images/thumbs, js/photos.js")
     return 0
 
 

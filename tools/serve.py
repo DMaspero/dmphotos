@@ -344,9 +344,7 @@ class Handler(BaseHTTPRequestHandler):
                 payload = json.loads(body.decode("utf-8")) if body else {}
             except (ValueError, UnicodeDecodeError):
                 return self._json({"error": "invalid JSON"}, 400)
-            log, rc = run_build_with_args(payload)
-            print(f"[admin] build rc={rc}")
-            return self._json({"ok": True, "log": log, "rc": rc})
+            return self._handle_build_stream(payload)
 
         if path == "/admin/publish":
             # site UUID can come from secret.txt or JSON body {site: uuid}
@@ -456,6 +454,75 @@ class Handler(BaseHTTPRequestHandler):
         except (BrokenPipeError, ConnectionResetError):
             pass
         t.join(timeout=1)
+
+    def _handle_build_stream(self, args: dict):
+        """Run build_photos with streaming logs and progress markers."""
+        q: queue.Queue[str | None] = queue.Queue()
+        rc_holder = {"rc": 1}
+
+        def log_fn(msg: str):
+            q.put(msg + "\n")
+            print(msg)
+
+        def worker():
+            # Build argv for build_photos.main
+            argv = ["build_photos", "--site"]
+            if args.get("force"):
+                argv.append("--force")
+            if args.get("no_watermark"):
+                argv.append("--no-watermark")
+            if args.get("watermark"):
+                argv.extend(["--watermark", str(args["watermark"])])
+            if args.get("watermark_size") is not None:
+                argv.extend(["--watermark-size", str(args["watermark_size"])])
+            if args.get("watermark_pos"):
+                argv.extend(["--watermark-pos", str(args["watermark_pos"])])
+            if args.get("watermark_opacity") is not None:
+                argv.extend(["--watermark-opacity", str(args["watermark_opacity"])])
+            if args.get("watermark_color"):
+                argv.extend(["--watermark-color", str(args["watermark_color"])])
+            old_argv = sys.argv
+            sys.argv = argv
+            try:
+                rc = build_photos.main(log_fn=log_fn)
+                rc_holder["rc"] = rc
+                q.put(f"__BUILD_DONE__ rc={rc}\n")
+            except SystemExit as e:
+                rc_holder["rc"] = e.code if isinstance(e.code, int) else 1
+                q.put(f"__BUILD_DONE__ rc={rc_holder['rc']}\n")
+            except Exception as e:
+                rc_holder["rc"] = 1
+                q.put(f"ERROR: {e}\n")
+                q.put(f"__BUILD_DONE__ rc=1\n")
+                print(f"[admin] build failed: {e}")
+            finally:
+                sys.argv = old_argv
+                q.put(None)
+
+        t = threading.Thread(target=worker, daemon=True)
+        t.start()
+
+        self.send_response(200)
+        self.send_header("Content-Type", "text/plain; charset=utf-8")
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("Transfer-Encoding", "chunked")
+        self.end_headers()
+        try:
+            while True:
+                item = q.get()
+                if item is None:
+                    break
+                chunk = item.encode("utf-8")
+                self.wfile.write(f"{len(chunk):X}\r\n".encode())
+                self.wfile.write(chunk)
+                self.wfile.write(b"\r\n")
+                self.wfile.flush()
+            self.wfile.write(b"0\r\n\r\n")
+            self.wfile.flush()
+        except (BrokenPipeError, ConnectionResetError):
+            pass
+        t.join(timeout=1)
+        print(f"[admin] build rc={rc_holder['rc']}")
 
     def _handle_manual_zip(self, token: str, site_id: str):
         """Sync missing images from Netlify, then return deploy.zip for manual drag-drop."""

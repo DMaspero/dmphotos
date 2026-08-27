@@ -501,6 +501,12 @@
     el.buildBtn.disabled = true;
     el.buildLog.hidden = false;
     el.buildLog.textContent = "";
+    var progWrap = document.getElementById("buildProgress");
+    var progFill = document.getElementById("buildProgressFill");
+    var progText = document.getElementById("buildProgressText");
+    if (progWrap) { progWrap.hidden = false; }
+    if (progFill) progFill.style.width = "0%";
+    if (progText) progText.textContent = "0%";
 
     var args = {
       force: el.buildForce.checked,
@@ -512,21 +518,65 @@
       watermark_color: el.buildWmColor.value || undefined,
     };
 
-    api("/admin/build", {
+    fetch("/admin/build", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "X-Admin-Token": token(), "Content-Type": "application/json" },
       body: JSON.stringify(args),
-    }).then(function (data) {
-      el.buildLog.textContent = data.log || "(no output)";
-      status("Build complete (rc " + data.rc + ").", data.rc === 0);
-      if (data.rc === 0) {
-        pendingBuildCount = 0;
-        updateBuildBanner();
+    }).then(function (res) {
+      if (!res.ok) {
+        return res.text().then(function (t) {
+          var j; try { j = JSON.parse(t); } catch(e) {}
+          throw new Error((j && j.error) || t || ("HTTP " + res.status));
+        });
       }
-      return load();
+      var reader = res.body.getReader();
+      var decoder = new TextDecoder();
+      var buffer = "";
+      var rc = 0;
+      function pump() {
+        return reader.read().then(function (r) {
+          if (r.done) {
+            if (progFill) progFill.style.width = "100%";
+            if (progText) progText.textContent = "Done";
+            setTimeout(function(){ if (progWrap) progWrap.hidden = true; }, 1200);
+            status("Build complete (rc " + rc + ").", rc === 0);
+            if (rc === 0) {
+              pendingBuildCount = 0;
+              updateBuildBanner();
+            }
+            return load();
+          }
+          buffer += decoder.decode(r.value, { stream: true });
+          var lines = buffer.split("\n");
+          buffer = lines.pop();
+          lines.forEach(function (line) {
+            if (!line) return;
+            if (line.indexOf("__PROGRESS__") === 0) {
+              var m = line.match(/__PROGRESS__\s+(\d+)\/(\d+)/);
+              if (m && progFill && progText) {
+                var cur = parseInt(m[1],10), tot = parseInt(m[2],10);
+                var pct = tot ? Math.round(cur/tot*100) : 0;
+                progFill.style.width = pct + "%";
+                progText.textContent = cur + "/" + tot + " — " + pct + "%";
+              }
+              return;
+            }
+            if (line.indexOf("__BUILD_DONE__") === 0) {
+              var mm = line.match(/rc=(\d+)/);
+              if (mm) rc = parseInt(mm[1],10);
+              return;
+            }
+            el.buildLog.textContent += line + "\n";
+            el.buildLog.scrollTop = el.buildLog.scrollHeight;
+          });
+          return pump();
+        });
+      }
+      return pump();
     }).catch(function (e) {
       statusErr("Build failed: " + e.message);
-      el.buildLog.textContent = e.message;
+      el.buildLog.textContent += "\nERROR: " + e.message + "\n";
+      if (progWrap) progWrap.hidden = true;
     }).finally(function () {
       el.buildBtn.disabled = false;
     });
