@@ -8,11 +8,11 @@
   <meta property="og:title" content="Photography — Davide Maspero">
   <meta property="og:description" content="A curated selection of photographs: travel, landscape, animals, night sky and people.">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="images/web/20250811-_6M28805.jpg">
+  <meta property="og:image" content="https://dmphotos.netlify.app/images/web/20250811-_6M28805.jpg">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Photography — Davide Maspero">
   <meta name="twitter:description" content="A curated selection of photographs: travel, landscape, animals, night sky and people.">
-  <meta name="twitter:image" content="images/web/20250811-_6M28805.jpg">
+  <meta name="twitter:image" content="https://dmphotos.netlify.app/images/web/20250811-_6M28805.jpg">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23111'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="css/style.css">
   <script>
@@ -63,7 +63,6 @@
   <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer" hidden>
     <div class="lb-backdrop"></div>
     <button class="lb-btn lb-close" type="button" aria-label="Close">&times;</button>
-    <button class="lb-btn lb-prev" type="button" aria-label="Previous photo">&larr;</button>
     <div class="lb-content">
       <div class="lb-exif" id="lbExif"></div>
       <figure class="lb-stage">
@@ -71,7 +70,10 @@
       </figure>
     </div>
     <div class="lb-like-wrap" id="lbLikeWrap"></div>
-    <button class="lb-btn lb-next" type="button" aria-label="Next photo">&rarr;</button>
+    <div class="lb-nav">
+      <button class="lb-btn lb-prev" type="button" aria-label="Previous photo">&larr;</button>
+      <button class="lb-btn lb-next" type="button" aria-label="Next photo">&rarr;</button>
+    </div>
     <button class="lb-btn lb-zoom" type="button" aria-label="Zoom in">+</button>
     <figcaption class="lb-caption">
       <span class="lb-meta"></span>
@@ -84,10 +86,13 @@
     </div>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
   <script>
-    firebase.initializeApp({
+    // Deferred Firebase scripts run before DOMContentLoaded; init then so `firebase` exists.
+    window.addEventListener("DOMContentLoaded", function () {
+      if (typeof firebase === "undefined") return;
+      firebase.initializeApp({
       apiKey: "AIzaSyCRMfxwEkGheaabxGZoYJCS8j31vlhgdjM",
       authDomain: "photosite-322bd.firebaseapp.com",
       databaseURL: "https://photosite-322bd-default-rtdb.europe-west1.firebasedatabase.app",
@@ -95,6 +100,7 @@
       storageBucket: "photosite-322bd.firebasestorage.app",
       messagingSenderId: "578759457925",
       appId: "1:578759457925:web:7235693bc5abf122773dec"
+    });
     });
   </script>
   <script src="js/site.js"></script>

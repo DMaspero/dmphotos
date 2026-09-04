@@ -34,9 +34,13 @@
   var likedByUser = {}; // filename -> true (localStorage)
   var likeCooldown = {}; // filename -> timestamp of last click
 
-  (function initFirebase() {
+  function initFirebase() {
+    // Firebase scripts are deferred; retry once the document is parsed.
+    if (typeof firebase === "undefined") {
+      document.addEventListener("DOMContentLoaded", initFirebase, { once: true });
+      return;
+    }
     try {
-      if (typeof firebase === "undefined") return;
       likesRef = firebase.database().ref("likes");
 
       // Load user's liked photos from localStorage
@@ -53,7 +57,8 @@
         updateAllLikeButtons();
       });
     } catch (e) {}
-  })();
+  }
+  initFirebase();
 
   function encodeKey(s) {
     return s.replace(/\./g, "_dot_");
@@ -675,6 +680,28 @@
     var r = lbStage.getBoundingClientRect();
     zoomTo(lbZoom * (e.deltaY < 0 ? 1.3 : 1 / 1.3), e.clientX - r.left, e.clientY - r.top);
   }, { passive: false });
+
+  /* Touch swipe to move between photos (only when not zoomed). */
+  (function initSwipe() {
+    var sx = 0, sy = 0, tracking = false;
+    lbStage.addEventListener("pointerdown", function (e) {
+      if (e.pointerType !== "touch" || lbZoom > 1) return;
+      tracking = true;
+      sx = e.clientX;
+      sy = e.clientY;
+    });
+    lbStage.addEventListener("pointerup", function (e) {
+      if (!tracking) return;
+      tracking = false;
+      if (lightboxEl.hidden || lbZoom > 1 || filteredList.length === 0) return;
+      var dx = e.clientX - sx, dy = e.clientY - sy;
+      if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+        lbIndex = (lbIndex + (dx < 0 ? 1 : -1) + filteredList.length) % filteredList.length;
+        showLb();
+      }
+    });
+    lbStage.addEventListener("pointercancel", function () { tracking = false; });
+  })();
 
   /* ---------------- init ---------------- */
 

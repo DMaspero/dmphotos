@@ -97,6 +97,7 @@ img, picture { -webkit-user-drag: none; user-select: none; -webkit-user-select: 
 
 .hero {
   min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -793,6 +794,9 @@ img, picture { -webkit-user-drag: none; user-select: none; -webkit-user-select: 
 .lb-next { right: 22px; top: 50%; transform: translateY(-50%); }
 .lb-zoom { top: 22px; left: 22px; }
 
+/* Wrapper is transparent on desktop so the arrows keep their overlay spots. */
+.lb-nav { display: contents; }
+
 .lb-hints {
   position: absolute;
   bottom: 60px;
@@ -832,9 +836,18 @@ img, picture { -webkit-user-drag: none; user-select: none; -webkit-user-select: 
 .lb-img.is-zoomed.is-dragging { cursor: grabbing; transition: transform 0s !important; }
 
 @media (max-width: 640px) {
-  .lb-prev { left: 10px; }
-  .lb-next { right: 10px; }
-  .lb-caption { padding: 0 54px; }
+  .grid { grid-template-columns: repeat(2, 1fr); }
+
+  .lightbox { flex-direction: column; }
+  .lb-stage, .lb-img { max-height: 70vh; }
+  .lb-nav {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    margin-top: 14px;
+  }
+  .lb-prev, .lb-next { position: static; transform: none; }
+  .lb-caption { padding: 0 16px; }
 }
 
 /* ---------------- Reduced motion ---------------- */
