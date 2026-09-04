@@ -182,13 +182,6 @@ img, picture { -webkit-user-drag: none; user-select: none; -webkit-user-select: 
   line-height: 1.2;
 }
 
-.hero-sub {
-  margin: 22px 0 0;
-  font-size: clamp(14px, 1.6vw, 17px);
-  color: var(--muted);
-  letter-spacing: 0.04em;
-}
-
 .hero-cta {
   margin-top: 56px;
   display: inline-flex;
@@ -216,7 +209,7 @@ img, picture { -webkit-user-drag: none; user-select: none; -webkit-user-select: 
 /* ---------------- Hero featured carousel ---------------- */
 
 .hero-featured {
-  margin-top: 40px;
+  margin-top: 64px;
   width: 100%;
   max-width: 100vw;
   overflow: hidden;

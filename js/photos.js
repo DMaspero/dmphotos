@@ -279,7 +279,7 @@ const PHOTOS = [
       "plitvice lakes",
       "lakes"
     ],
-    "featured": true,
+    "featured": false,
     "exif": {
       "camera": "PowerShot G7 X Mark II",
       "lens": "8.8-36.8 mm",
@@ -398,6 +398,7 @@ const PHOTOS = [
     "tags": [
       "zoo",
       "barcelona",
+      "flamingo",
       "bird"
     ],
     "featured": false,
@@ -422,6 +423,7 @@ const PHOTOS = [
     "tags": [
       "zoo",
       "barcelona",
+      "flamingo",
       "bird"
     ],
     "featured": true,
@@ -459,6 +461,30 @@ const PHOTOS = [
     }
   },
   {
+    "file": "20250428-_6M26156-Pano-2.jpg",
+    "src": "images/web/20250428-_6M26156-Pano-2.jpg",
+    "srcWebp": "images/web/20250428-_6M26156-Pano-2.webp",
+    "thumb": "images/thumbs/20250428-_6M26156-Pano-2.jpg",
+    "thumbWebp": "images/thumbs/20250428-_6M26156-Pano-2.webp",
+    "w": 2048,
+    "h": 915,
+    "category": "travel",
+    "tags": [
+      "seul",
+      "royal palace",
+      "lake"
+    ],
+    "featured": false,
+    "exif": {
+      "camera": "EOS R6m2",
+      "lens": "RF24-105mm F4 L IS USM",
+      "focal": "35mm",
+      "aperture": "f/9.0",
+      "shutter": "1/160s",
+      "iso": "ISO 100"
+    }
+  },
+  {
     "file": "20250609-_6M26365-2.jpg",
     "src": "images/web/20250609-_6M26365-2.jpg",
     "srcWebp": "images/web/20250609-_6M26365-2.webp",
@@ -470,9 +496,10 @@ const PHOTOS = [
     "tags": [
       "zoo",
       "barcelona",
+      "flamingo",
       "bird"
     ],
-    "featured": false,
+    "featured": true,
     "exif": {
       "camera": "EOS R6m2",
       "lens": "RF100-400mm F5.6-8 IS USM",
@@ -492,7 +519,6 @@ const PHOTOS = [
     "h": 1365,
     "category": "animals",
     "tags": [
-      "tiger",
       "zoo",
       "barcelona",
       "fun"
@@ -567,7 +593,8 @@ const PHOTOS = [
       "portugal",
       "picos d'europa",
       "covadonga's lake",
-      "lakes"
+      "lakes",
+      "cow"
     ],
     "featured": true,
     "exif": {
@@ -643,7 +670,7 @@ const PHOTOS = [
       "zoo",
       "barcelona"
     ],
-    "featured": false,
+    "featured": true,
     "exif": {
       "camera": "EOS R6m2",
       "lens": "RF100-400mm F5.6-8 IS USM",
@@ -699,6 +726,318 @@ const PHOTOS = [
       "aperture": "f/9.0",
       "shutter": "1/2500s",
       "iso": "ISO 1250"
+    }
+  },
+  {
+    "file": "20260704-_6M28630.jpg",
+    "src": "images/web/20260704-_6M28630.jpg",
+    "srcWebp": "images/web/20260704-_6M28630.webp",
+    "thumb": "images/thumbs/20260704-_6M28630.jpg",
+    "thumbWebp": "images/thumbs/20260704-_6M28630.webp",
+    "w": 2048,
+    "h": 1365,
+    "category": "animals",
+    "tags": [
+      "insect"
+    ],
+    "featured": false,
+    "exif": {
+      "camera": "EOS R6m2",
+      "lens": "RF24-105mm F4 L IS USM",
+      "focal": "105mm",
+      "aperture": "f/4.5",
+      "shutter": "1/1000s",
+      "iso": "ISO 160"
+    }
+  },
+  {
+    "file": "20260816-_6M29613.jpg",
+    "src": "images/web/20260816-_6M29613.jpg",
+    "srcWebp": "images/web/20260816-_6M29613.webp",
+    "thumb": "images/thumbs/20260816-_6M29613.jpg",
+    "thumbWebp": "images/thumbs/20260816-_6M29613.webp",
+    "w": 2048,
+    "h": 1365,
+    "category": "macro",
+    "tags": [
+      "insect"
+    ],
+    "featured": false,
+    "exif": {
+      "camera": "EOS R6m2",
+      "lens": "RF100mm F2.8 L MACRO IS USM",
+      "focal": "100mm",
+      "aperture": "f/14.0",
+      "shutter": "1/200s",
+      "iso": "ISO 3200"
+    }
+  },
+  {
+    "file": "20260818-_6M20647.jpg",
+    "src": "images/web/20260818-_6M20647.jpg",
+    "srcWebp": "images/web/20260818-_6M20647.webp",
+    "thumb": "images/thumbs/20260818-_6M20647.jpg",
+    "thumbWebp": "images/thumbs/20260818-_6M20647.webp",
+    "w": 2048,
+    "h": 1365,
+    "category": "landscape",
+    "tags": [
+      "cow"
+    ],
+    "featured": true,
+    "exif": {
+      "camera": "EOS R6m2",
+      "lens": "RF100mm F2.8 L MACRO IS USM",
+      "focal": "100mm",
+      "aperture": "f/8.0",
+      "shutter": "1/640s",
+      "iso": "ISO 200"
+    }
+  },
+  {
+    "file": "20260818-_6M20668.jpg",
+    "src": "images/web/20260818-_6M20668.jpg",
+    "srcWebp": "images/web/20260818-_6M20668.webp",
+    "thumb": "images/thumbs/20260818-_6M20668.jpg",
+    "thumbWebp": "images/thumbs/20260818-_6M20668.webp",
+    "w": 2048,
+    "h": 1365,
+    "category": "macro",
+    "tags": [
+      "flower",
+      "insect"
+    ],
+    "featured": false,
+    "exif": {
+      "camera": "EOS R6m2",
+      "lens": "RF100mm F2.8 L MACRO IS USM",
+      "focal": "100mm",
+      "aperture": "f/13.0",
+      "shutter": "1/250s",
+      "iso": "ISO 5000"
+    }
+  },
+  {
+    "file": "20260818-_6M20684.jpg",
+    "src": "images/web/20260818-_6M20684.jpg",
+    "srcWebp": "images/web/20260818-_6M20684.webp",
+    "thumb": "images/thumbs/20260818-_6M20684.jpg",
+    "thumbWebp": "images/thumbs/20260818-_6M20684.webp",
+    "w": 2048,
+    "h": 1365,
+    "category": "macro",
+    "tags": [
+      "flower"
+    ],
+    "featured": false,
+    "exif": {
+      "camera": "EOS R6m2",
+      "lens": "RF100mm F2.8 L MACRO IS USM",
+      "focal": "100mm",
+      "aperture": "f/16.0",
+      "shutter": "1/160s",
+      "iso": "ISO 3200"
+    }
+  },
+  {
+    "file": "20260822-_6M21055-2.jpg",
+    "src": "images/web/20260822-_6M21055-2.jpg",
+    "srcWebp": "images/web/20260822-_6M21055-2.webp",
+    "thumb": "images/thumbs/20260822-_6M21055-2.jpg",
+    "thumbWebp": "images/thumbs/20260822-_6M21055-2.webp",
+    "w": 2048,
+    "h": 1365,
+    "category": "macro",
+    "tags": [
+      "flower",
+      "insect"
+    ],
+    "featured": true,
+    "exif": {
+      "camera": "EOS R6m2",
+      "lens": "RF100mm F2.8 L MACRO IS USM",
+      "focal": "100mm",
+      "aperture": "f/20.0",
+      "shutter": "1/400s",
+      "iso": "ISO 6400"
+    }
+  },
+  {
+    "file": "20260822-_6M21087-2.jpg",
+    "src": "images/web/20260822-_6M21087-2.jpg",
+    "srcWebp": "images/web/20260822-_6M21087-2.webp",
+    "thumb": "images/thumbs/20260822-_6M21087-2.jpg",
+    "thumbWebp": "images/thumbs/20260822-_6M21087-2.webp",
+    "w": 2048,
+    "h": 1365,
+    "category": "macro",
+    "tags": [
+      "flower",
+      "insect"
+    ],
+    "featured": false,
+    "exif": {
+      "camera": "EOS R6m2",
+      "lens": "RF100mm F2.8 L MACRO IS USM",
+      "focal": "100mm",
+      "aperture": "f/11.0",
+      "shutter": "1/500s",
+      "iso": "ISO 1250"
+    }
+  },
+  {
+    "file": "20260822-_6M21240.jpg",
+    "src": "images/web/20260822-_6M21240.jpg",
+    "srcWebp": "images/web/20260822-_6M21240.webp",
+    "thumb": "images/thumbs/20260822-_6M21240.jpg",
+    "thumbWebp": "images/thumbs/20260822-_6M21240.webp",
+    "w": 2048,
+    "h": 1365,
+    "category": "travel",
+    "tags": [
+      "dam",
+      "mountain",
+      "ruins"
+    ],
+    "featured": true,
+    "exif": {
+      "camera": "EOS R6m2",
+      "lens": "RF24-105mm F4 L IS USM",
+      "focal": "50mm",
+      "aperture": "f/5.6",
+      "shutter": "1/640s",
+      "iso": "ISO 100"
+    }
+  },
+  {
+    "file": "20260823-DC__6M21424.jpg",
+    "src": "images/web/20260823-DC__6M21424.jpg",
+    "srcWebp": "images/web/20260823-DC__6M21424.webp",
+    "thumb": "images/thumbs/20260823-DC__6M21424.jpg",
+    "thumbWebp": "images/thumbs/20260823-DC__6M21424.webp",
+    "w": 2048,
+    "h": 1365,
+    "category": "macro",
+    "tags": [
+      "mushroom"
+    ],
+    "featured": true,
+    "exif": null
+  },
+  {
+    "file": "20260824-_6M21882.jpg",
+    "src": "images/web/20260824-_6M21882.jpg",
+    "srcWebp": "images/web/20260824-_6M21882.webp",
+    "thumb": "images/thumbs/20260824-_6M21882.jpg",
+    "thumbWebp": "images/thumbs/20260824-_6M21882.webp",
+    "w": 2048,
+    "h": 1365,
+    "category": "landscape",
+    "tags": [
+      "shadow",
+      "mountain"
+    ],
+    "featured": false,
+    "exif": {
+      "camera": "EOS R6m2",
+      "lens": "RF24-105mm F4 L IS USM",
+      "focal": "35mm",
+      "aperture": "f/6.3",
+      "shutter": "1/640s",
+      "iso": "ISO 125"
+    }
+  },
+  {
+    "file": "20260824-_6M21892.jpg",
+    "src": "images/web/20260824-_6M21892.jpg",
+    "srcWebp": "images/web/20260824-_6M21892.webp",
+    "thumb": "images/thumbs/20260824-_6M21892.jpg",
+    "thumbWebp": "images/thumbs/20260824-_6M21892.webp",
+    "w": 2048,
+    "h": 1365,
+    "category": "landscape",
+    "tags": [
+      "mountain",
+      "lake"
+    ],
+    "featured": false,
+    "exif": {
+      "camera": "EOS R6m2",
+      "lens": "RF24-105mm F4 L IS USM",
+      "focal": "30mm",
+      "aperture": "f/7.1",
+      "shutter": "1/640s",
+      "iso": "ISO 250"
+    }
+  },
+  {
+    "file": "20260827-_6M22045-HDR.jpg",
+    "src": "images/web/20260827-_6M22045-HDR.jpg",
+    "srcWebp": "images/web/20260827-_6M22045-HDR.webp",
+    "thumb": "images/thumbs/20260827-_6M22045-HDR.jpg",
+    "thumbWebp": "images/thumbs/20260827-_6M22045-HDR.webp",
+    "w": 2048,
+    "h": 1365,
+    "category": "landscape",
+    "tags": [
+      "dawn",
+      "mountain",
+      "cloud"
+    ],
+    "featured": false,
+    "exif": {
+      "camera": "EOS R6m2",
+      "lens": "RF24-105mm F4 L IS USM",
+      "focal": "26mm",
+      "aperture": "f/7.1",
+      "shutter": "1/15s",
+      "iso": "ISO 100"
+    }
+  },
+  {
+    "file": "20260827-_6M22091.jpg",
+    "src": "images/web/20260827-_6M22091.jpg",
+    "srcWebp": "images/web/20260827-_6M22091.webp",
+    "thumb": "images/thumbs/20260827-_6M22091.jpg",
+    "thumbWebp": "images/thumbs/20260827-_6M22091.webp",
+    "w": 2048,
+    "h": 1365,
+    "category": "macro",
+    "tags": [
+      "insect"
+    ],
+    "featured": false,
+    "exif": {
+      "camera": "EOS R6m2",
+      "lens": "RF100mm F2.8 L MACRO IS USM",
+      "focal": "100mm",
+      "aperture": "f/16.0",
+      "shutter": "1/160s",
+      "iso": "ISO 20000"
+    }
+  },
+  {
+    "file": "20260830-_6M22451.jpg",
+    "src": "images/web/20260830-_6M22451.jpg",
+    "srcWebp": "images/web/20260830-_6M22451.webp",
+    "thumb": "images/thumbs/20260830-_6M22451.jpg",
+    "thumbWebp": "images/thumbs/20260830-_6M22451.webp",
+    "w": 2048,
+    "h": 1365,
+    "category": "travel",
+    "tags": [
+      "france",
+      "color",
+      "see"
+    ],
+    "featured": false,
+    "exif": {
+      "camera": "EOS R6m2",
+      "lens": "RF24-105mm F4 L IS USM",
+      "focal": "31mm",
+      "aperture": "f/7.1",
+      "shutter": "1/800s",
+      "iso": "ISO 100"
     }
   },
   {
@@ -808,7 +1147,9 @@ const PHOTOS = [
     "w": 2048,
     "h": 1152,
     "category": "landscape",
-    "tags": [],
+    "tags": [
+      "cloud"
+    ],
     "featured": false,
     "exif": {
       "camera": "PowerShot G7 X Mark II",
@@ -878,8 +1219,7 @@ const PHOTOS = [
     "h": 1365,
     "category": "macro",
     "tags": [
-      "insect",
-      "grasshopper"
+      "insect"
     ],
     "featured": false,
     "exif": {

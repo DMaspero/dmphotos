@@ -704,8 +704,6 @@
     if (meta) meta.setAttribute("content", site.description);
   }
 
-  var heroCats = document.getElementById("heroCats");
-  if (heroCats) heroCats.textContent = CAT_LIST.map(cap).join(" \u00b7 ");
   backBtnEl.addEventListener("click", goIndex);
   buildCatNav();
   buildTagCloud();

@@ -119,7 +119,7 @@
         "plitvice lakes",
         "lakes"
       ],
-      "featured": true
+      "featured": false
     },
     {
       "file": "19-11-2023_001-2.jpg",
@@ -168,6 +168,7 @@
       "tags": [
         "zoo",
         "barcelona",
+        "flamingo",
         "bird"
       ],
       "featured": false
@@ -178,6 +179,7 @@
       "tags": [
         "zoo",
         "barcelona",
+        "flamingo",
         "bird"
       ],
       "featured": true
@@ -193,20 +195,30 @@
       "featured": true
     },
     {
+      "file": "20250428-_6M26156-Pano-2.jpg",
+      "category": "travel",
+      "tags": [
+        "seul",
+        "royal palace",
+        "lake"
+      ],
+      "featured": false
+    },
+    {
       "file": "20250609-_6M26365-2.jpg",
       "category": "animals",
       "tags": [
         "zoo",
         "barcelona",
+        "flamingo",
         "bird"
       ],
-      "featured": false
+      "featured": true
     },
     {
       "file": "20250609-_6M26551.jpg",
       "category": "animals",
       "tags": [
-        "tiger",
         "zoo",
         "barcelona",
         "fun"
@@ -239,7 +251,8 @@
         "portugal",
         "picos d'europa",
         "covadonga's lake",
-        "lakes"
+        "lakes",
+        "cow"
       ],
       "featured": true
     },
@@ -273,7 +286,7 @@
         "zoo",
         "barcelona"
       ],
-      "featured": false
+      "featured": true
     },
     {
       "file": "20260502-_6M27702.jpg",
@@ -292,6 +305,129 @@
         "delta ebro",
         "bird",
         "cataluña"
+      ],
+      "featured": false
+    },
+    {
+      "file": "20260704-_6M28630.jpg",
+      "category": "animals",
+      "tags": [
+        "insect"
+      ],
+      "featured": false
+    },
+    {
+      "file": "20260816-_6M29613.jpg",
+      "category": "macro",
+      "tags": [
+        "insect"
+      ],
+      "featured": false
+    },
+    {
+      "file": "20260818-_6M20647.jpg",
+      "category": "landscape",
+      "tags": [
+        "cow"
+      ],
+      "featured": true
+    },
+    {
+      "file": "20260818-_6M20668.jpg",
+      "category": "macro",
+      "tags": [
+        "flower",
+        "insect"
+      ],
+      "featured": false
+    },
+    {
+      "file": "20260818-_6M20684.jpg",
+      "category": "macro",
+      "tags": [
+        "flower"
+      ],
+      "featured": false
+    },
+    {
+      "file": "20260822-_6M21055-2.jpg",
+      "category": "macro",
+      "tags": [
+        "flower",
+        "insect"
+      ],
+      "featured": true
+    },
+    {
+      "file": "20260822-_6M21087-2.jpg",
+      "category": "macro",
+      "tags": [
+        "flower",
+        "insect"
+      ],
+      "featured": false
+    },
+    {
+      "file": "20260822-_6M21240.jpg",
+      "category": "travel",
+      "tags": [
+        "dam",
+        "mountain",
+        "ruins"
+      ],
+      "featured": true
+    },
+    {
+      "file": "20260823-DC__6M21424.jpg",
+      "category": "macro",
+      "tags": [
+        "mushroom"
+      ],
+      "featured": true
+    },
+    {
+      "file": "20260824-_6M21882.jpg",
+      "category": "landscape",
+      "tags": [
+        "shadow",
+        "mountain"
+      ],
+      "featured": false
+    },
+    {
+      "file": "20260824-_6M21892.jpg",
+      "category": "landscape",
+      "tags": [
+        "mountain",
+        "lake"
+      ],
+      "featured": false
+    },
+    {
+      "file": "20260827-_6M22045-HDR.jpg",
+      "category": "landscape",
+      "tags": [
+        "dawn",
+        "mountain",
+        "cloud"
+      ],
+      "featured": false
+    },
+    {
+      "file": "20260827-_6M22091.jpg",
+      "category": "macro",
+      "tags": [
+        "insect"
+      ],
+      "featured": false
+    },
+    {
+      "file": "20260830-_6M22451.jpg",
+      "category": "travel",
+      "tags": [
+        "france",
+        "color",
+        "see"
       ],
       "featured": false
     },
@@ -340,7 +476,9 @@
     {
       "file": "IMG_0019.jpg",
       "category": "landscape",
-      "tags": [],
+      "tags": [
+        "cloud"
+      ],
       "featured": false
     },
     {
@@ -368,8 +506,7 @@
       "file": "R6MII_18Aug26_001-2.jpg",
       "category": "macro",
       "tags": [
-        "insect",
-        "grasshopper"
+        "insect"
       ],
       "featured": false
     }

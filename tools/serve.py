@@ -611,6 +611,17 @@ class Handler(BaseHTTPRequestHandler):
                 counts[p["category"]] += 1
             for t in p.get("tags", []):
                 tags[t] = tags.get(t, 0) + 1
+        # Newest uploads first (file mtime in the photos dir).
+        try:
+            pdir = get_photos_dir()
+            photos = sorted(
+                photos,
+                key=lambda p: (pdir / str(p.get("file", ""))).stat().st_mtime
+                if (pdir / str(p.get("file", ""))).is_file() else 0,
+                reverse=True,
+            )
+        except Exception:
+            pass
         return {"photos": photos, "categories": {"values": cats, "counts": counts}, "tags": tags}
 
     def _validate_meta(self, payload):
