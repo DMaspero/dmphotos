@@ -308,12 +308,15 @@ img, picture { -webkit-user-drag: none; user-select: none; -webkit-user-select: 
 .tag-cloud[hidden] { display: none; }
 
 @media (max-width: 640px) {
-  /* Index view: title -> category tiles -> tags (tags last, less crowded). */
-  .gallery:has(> .grid.is-index) { display: flex; flex-direction: column; }
-  .gallery:has(> .grid.is-index) > .gallery-head { display: contents; }
-  .gallery:has(> .grid.is-index) > .gallery-head > .gallery-title { order: 1; }
-  .gallery:has(> .grid.is-index) > .grid { order: 2; margin-top: 12px; }
-  .gallery:has(> .grid.is-index) > .gallery-head > .tag-cloud { order: 3; }
+  /* Tags last on mobile, in both index and category views. */
+  .gallery { display: flex; flex-direction: column; }
+  .gallery > .gallery-head { display: contents; }
+  .gallery > .gallery-head > .gallery-title { order: 1; }
+  .gallery > .gallery-head > .back-btn { order: 2; }
+  .gallery > .gallery-head > .cat-nav { order: 3; }
+  .gallery > .grid { order: 4; margin-top: 12px; }
+  .gallery > .gallery-head > .tag-cloud { order: 5; }
+  .gallery > .empty-note { order: 6; }
 }
 
 .tag-chip {
