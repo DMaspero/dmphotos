@@ -314,6 +314,29 @@ const PHOTOS = [
     }
   },
   {
+    "file": "20240729-IMG_6573.jpg",
+    "src": "images/web/20240729-IMG_6573.jpg",
+    "srcWebp": "images/web/20240729-IMG_6573.webp",
+    "thumb": "images/thumbs/20240729-IMG_6573.jpg",
+    "thumbWebp": "images/thumbs/20240729-IMG_6573.webp",
+    "w": 2048,
+    "h": 1365,
+    "category": "landscape",
+    "tags": [
+      "sea",
+      "portugal"
+    ],
+    "featured": false,
+    "exif": {
+      "camera": "EOS R10",
+      "lens": "RF-S18-150mm F3.5-6.3 IS STM",
+      "focal": "70mm",
+      "aperture": "f/6.3",
+      "shutter": "1/500s",
+      "iso": "ISO 100"
+    }
+  },
+  {
     "file": "20240801-IMG_6917-Enhanced-NR.jpg",
     "src": "images/web/20240801-IMG_6917-Enhanced-NR.jpg",
     "srcWebp": "images/web/20240801-IMG_6917-Enhanced-NR.webp",
@@ -335,6 +358,77 @@ const PHOTOS = [
       "aperture": "f/7.1",
       "shutter": "1/2000s",
       "iso": "ISO 320"
+    }
+  },
+  {
+    "file": "20240802-IMG_7594.jpg",
+    "src": "images/web/20240802-IMG_7594.jpg",
+    "srcWebp": "images/web/20240802-IMG_7594.webp",
+    "thumb": "images/thumbs/20240802-IMG_7594.jpg",
+    "thumbWebp": "images/thumbs/20240802-IMG_7594.webp",
+    "w": 2048,
+    "h": 1367,
+    "category": "night",
+    "tags": [
+      "sea",
+      "portugal",
+      "sunset",
+      "shadow"
+    ],
+    "featured": false,
+    "exif": {
+      "camera": "EOS R10",
+      "lens": "RF100-400mm F5.6-8 IS USM",
+      "focal": "100mm",
+      "aperture": "f/8.0",
+      "shutter": "1/400s",
+      "iso": "ISO 100"
+    }
+  },
+  {
+    "file": "20240804-IMG_7776.jpg",
+    "src": "images/web/20240804-IMG_7776.jpg",
+    "srcWebp": "images/web/20240804-IMG_7776.webp",
+    "thumb": "images/thumbs/20240804-IMG_7776.jpg",
+    "thumbWebp": "images/thumbs/20240804-IMG_7776.webp",
+    "w": 2048,
+    "h": 1365,
+    "category": "animals",
+    "tags": [
+      "portugal"
+    ],
+    "featured": false,
+    "exif": {
+      "camera": "EOS R10",
+      "lens": "RF100-400mm F5.6-8 IS USM",
+      "focal": "100mm",
+      "aperture": "f/8.0",
+      "shutter": "1/1000s",
+      "iso": "ISO 200"
+    }
+  },
+  {
+    "file": "20240804-IMG_7805.jpg",
+    "src": "images/web/20240804-IMG_7805.jpg",
+    "srcWebp": "images/web/20240804-IMG_7805.webp",
+    "thumb": "images/thumbs/20240804-IMG_7805.jpg",
+    "thumbWebp": "images/thumbs/20240804-IMG_7805.webp",
+    "w": 2048,
+    "h": 1198,
+    "category": "landscape",
+    "tags": [
+      "rocks",
+      "sea",
+      "portugal"
+    ],
+    "featured": false,
+    "exif": {
+      "camera": "EOS R10",
+      "lens": "RF100-400mm F5.6-8 IS USM",
+      "focal": "259mm",
+      "aperture": "f/7.1",
+      "shutter": "1/800s",
+      "iso": "ISO 125"
     }
   },
   {
@@ -1183,6 +1277,24 @@ const PHOTOS = [
       "aperture": "f/11.0",
       "shutter": "1/10s",
       "iso": "ISO 125"
+    }
+  },
+  {
+    "file": "IMG_6506-sharpen-denoise.jpg",
+    "src": "images/web/IMG_6506-sharpen-denoise.jpg",
+    "srcWebp": "images/web/IMG_6506-sharpen-denoise.webp",
+    "thumb": "images/thumbs/IMG_6506-sharpen-denoise.jpg",
+    "thumbWebp": "images/thumbs/IMG_6506-sharpen-denoise.webp",
+    "w": 2048,
+    "h": 1300,
+    "category": "animals",
+    "tags": [
+      "fun",
+      "portugal"
+    ],
+    "featured": false,
+    "exif": {
+      "lens": "RF-S18-150mm F3.5-6.3 IS STM"
     }
   },
   {

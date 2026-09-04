@@ -132,11 +132,49 @@
       "featured": true
     },
     {
+      "file": "20240729-IMG_6573.jpg",
+      "category": "landscape",
+      "tags": [
+        "sea",
+        "portugal"
+      ],
+      "featured": false
+    },
+    {
       "file": "20240801-IMG_6917-Enhanced-NR.jpg",
       "category": "animals",
       "tags": [
         "wildlife",
         "dolphin",
+        "portugal"
+      ],
+      "featured": false
+    },
+    {
+      "file": "20240802-IMG_7594.jpg",
+      "category": "night",
+      "tags": [
+        "sea",
+        "portugal",
+        "sunset",
+        "shadow"
+      ],
+      "featured": false
+    },
+    {
+      "file": "20240804-IMG_7776.jpg",
+      "category": "animals",
+      "tags": [
+        "portugal"
+      ],
+      "featured": false
+    },
+    {
+      "file": "20240804-IMG_7805.jpg",
+      "category": "landscape",
+      "tags": [
+        "rocks",
+        "sea",
         "portugal"
       ],
       "featured": false
@@ -489,6 +527,15 @@
         "baia del silenzio",
         "sea",
         "italy"
+      ],
+      "featured": false
+    },
+    {
+      "file": "IMG_6506-sharpen-denoise.jpg",
+      "category": "animals",
+      "tags": [
+        "fun",
+        "portugal"
       ],
       "featured": false
     },
