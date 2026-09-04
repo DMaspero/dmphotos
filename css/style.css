@@ -306,6 +306,15 @@ img, picture { -webkit-user-drag: none; user-select: none; -webkit-user-select: 
 .cat-nav[hidden],
 .tag-cloud[hidden] { display: none; }
 
+@media (max-width: 640px) {
+  /* Index view: title -> category tiles -> tags (tags last, less crowded). */
+  .gallery:has(> .grid.is-index) { display: flex; flex-direction: column; }
+  .gallery:has(> .grid.is-index) > .gallery-head { display: contents; }
+  .gallery:has(> .grid.is-index) > .gallery-head > .gallery-title { order: 1; }
+  .gallery:has(> .grid.is-index) > .grid { order: 2; margin-top: 12px; }
+  .gallery:has(> .grid.is-index) > .gallery-head > .tag-cloud { order: 3; }
+}
+
 .tag-chip {
   appearance: none;
   border: none;
