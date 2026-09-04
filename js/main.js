@@ -34,12 +34,28 @@
   var likedByUser = {}; // filename -> true (localStorage)
   var likeCooldown = {}; // filename -> timestamp of last click
 
+  /* Likes need the deferred Firebase SDK + initialized app. Poll briefly so a
+     slow script, an already-fired DOMContentLoaded, or a restored tab never
+     kills them silently — and complain loudly if the SDK never shows up. */
   function initFirebase() {
-    // Firebase scripts are deferred; retry once the document is parsed.
-    if (typeof firebase === "undefined") {
-      document.addEventListener("DOMContentLoaded", initFirebase, { once: true });
+    if (typeof firebase !== "undefined" && firebase.apps && firebase.apps.length) {
+      connectLikes();
       return;
     }
+    var tries = 0;
+    var timer = setInterval(function () {
+      tries++;
+      if (typeof firebase !== "undefined" && firebase.apps && firebase.apps.length) {
+        clearInterval(timer);
+        connectLikes();
+      } else if (tries >= 20) {
+        clearInterval(timer);
+        console.error("Likes disabled: Firebase SDK did not start (check ad-blocker / connection).");
+      }
+    }, 500);
+  }
+
+  function connectLikes() {
     try {
       likesRef = firebase.database().ref("likes");
 
@@ -56,7 +72,14 @@
         Object.keys(data).forEach(function (k) { likeCounts[decodeKey(k)] = data[k] || 0; });
         updateAllLikeButtons();
       });
-    } catch (e) {}
+
+      // Loud signal if the app is ready but the database itself is unreachable.
+      firebase.database().ref(".info/connected").on("value", function (snap) {
+        if (!snap.val()) console.warn("Likes: database unreachable (offline or blocked).");
+      });
+    } catch (e) {
+      console.error("Likes disabled:", e);
+    }
   }
   initFirebase();
 
