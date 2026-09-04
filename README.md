@@ -2,7 +2,7 @@
 
 Single-page, no-framework portfolio. Plain `index.html` + `css/style.css` + `js/main.js` + generated `js/photos.js` / `js/site.js`. Originals in `photos/` (configurable, see below) are never served — `pixi run build` resizes to `images/web/` (2048px) + `images/thumbs/` (900px) with WebP, watermark and EXIF.
 
-Live: `https://dmphotos.netlify.app` — GitHub: `https://github.com/DMaspero/dmphotos` (private).
+Live: `https://dmphotos.netlify.app` (moving to `https://dmaspero.github.io/dmphotos/`) — GitHub: `https://github.com/DMaspero/dmphotos` (make it public, then Settings → Pages → Deploy from branch `gh-pages`; auto-published on push by `.github/workflows/pages.yml`).
 
 ## Requirements
 

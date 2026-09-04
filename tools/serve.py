@@ -82,6 +82,7 @@ DEPLOY_SKIP = {
     "serve.py", "pixi.toml", "pixi.lock",
     "AGENTS.md", "CONTRIBUTING.md", "LICENSE.md",
     "deploy.zip",
+    "serve.log",
 }
 DEPLOY_SKIP_DIRS = {"photos", "tools", ".pixi", ".git", "node_modules"}
 

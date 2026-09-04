@@ -15,7 +15,7 @@ Single-page static photography site: plain HTML/CSS/JS, no framework, no build t
 - Endpoints: `GET /admin/data`, `POST /admin/upload?name=` (raw bytes), `POST /admin/meta` (full photos array → saves meta + rebuilds), `POST /admin/build`, `POST /admin/delete?name=` (removes original + generated images + rebuilds).
 - Lets you upload photos (drag & drop), add/rename/delete categories, and edit per-photo tags/featured in the browser instead of hand-editing JSON.
 - `tools/serve.py` is stdlib-only; keep it dependency-free.
-- **Never deploy the admin with the static site.** Deploy only `index.html`, `css/`, `js/`, `images/` — exclude `admin.html`, `css/admin.css`, `js/admin.js`, `tools/`, `photos/`, `serve.py`.
+- **Never deploy the admin with the static site.** Deploy only `index.html`, `css/`, `js/`, `images/` — exclude `admin.html`, `css/admin.css`, `js/admin.js`, `tools/`, `photos/`, `serve.py`. GitHub Pages auto-publishes this same set (see `tools/serve.py: collect_deploy_files`) via `.github/workflows/pages.yml` on push to `main` → `gh-pages` branch.
 
 ## Photo workflow
 1. Drop originals into `photos/` (or upload via admin).

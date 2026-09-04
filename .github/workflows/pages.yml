@@ -1,0 +1,48 @@
+# Publish the static site to GitHub Pages (gh-pages branch).
+# File set mirrors tools/serve.py collect_deploy_files(): everything except
+# dotfiles/dotdirs, tools/, photos/, admin.*, *.meta.json, secrets, pixi files.
+name: Publish to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Assemble public site
+        run: |
+          rm -rf public
+          mkdir public
+          tar \
+            --exclude='./public' --exclude='./.*' --exclude='*/.*' \
+            --exclude='tools' --exclude='photos' \
+            --exclude='admin.html' --exclude='admin.css' --exclude='admin.js' \
+            --exclude='photos.meta.json' --exclude='site.meta.json' \
+            --exclude='secret.txt' --exclude='netlify.json' --exclude='.photos_dir' \
+            --exclude='serve.py' --exclude='pixi.toml' --exclude='pixi.lock' \
+            --exclude='AGENTS.md' --exclude='CONTRIBUTING.md' --exclude='LICENSE.md' \
+            --exclude='deploy.zip' --exclude='serve.log' \
+            -cf - . | tar -xf - -C public
+
+      - name: Publish to gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd public
+          git init -b gh-pages -q
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git commit -qm "publish $GITHUB_SHA"; then
+            git push -qf "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" gh-pages
+          else
+            echo 'no changes, skipping push'
+          fi
