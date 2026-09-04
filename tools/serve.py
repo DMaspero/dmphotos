@@ -8,11 +8,10 @@ Single static file server with extra admin routes guarded by a token:
   POST /admin/upload?name=.. -> save one image into photos/ (token)
   POST /admin/meta          -> JSON body: replace photos.meta.json + rebuild (token)
   POST /admin/build         -> run the photo build + emit js/photos.js (token)
-  POST /admin/publish       -> digest deploy to Netlify (token, streams logs)
-  GET  /admin/zip           -> deploy.zip download (token)
+   POST /admin/push          -> git add, commit + push to main (Pages auto-publishes)
 
 Token: env ADMIN_TOKEN (default "" = open on localhost). Send as ?token= or X-Admin-Token.
-Netlify deploy reads NETLIFY_AUTH_TOKEN + SITE_UUID from secret.txt (never deployed).
+Pushing to main triggers the GitHub Pages workflow (no tokens needed locally).
 """
 
 from __future__ import annotations
@@ -25,6 +24,7 @@ import mimetypes
 import os
 import queue
 import re
+import subprocess
 import sys
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -73,7 +73,7 @@ def get_photos_dir_display() -> str:
         return str(p)
 
 
-# Files that must never be deployed to Netlify
+# Files that must never be published to the public site
 DEPLOY_SKIP = {
     "admin.html", "admin.css", "admin.js",
     "photos.meta.json", "site.meta.json",
@@ -85,30 +85,6 @@ DEPLOY_SKIP = {
     "serve.log",
 }
 DEPLOY_SKIP_DIRS = {"photos", "tools", ".pixi", ".git", "node_modules"}
-
-
-def load_secret() -> dict[str, str]:
-    """Parse secret.txt lines like KEY='value' or KEY=\"value\" or KEY=value."""
-    fp = ROOT / "secret.txt"
-    out: dict[str, str] = {}
-    if not fp.is_file():
-        return out
-    for raw in fp.read_text(encoding="utf-8").splitlines():
-        line = raw.strip()
-        if not line or line.startswith("#"):
-            continue
-        if "=" not in line:
-            continue
-        k, v = line.split("=", 1)
-        k = k.strip()
-        v = v.strip().strip("'").strip('"').strip()
-        out[k] = v
-    # also allow env override
-    if os.environ.get("NETLIFY_AUTH_TOKEN"):
-        out["NETLIFY_AUTH_TOKEN"] = os.environ["NETLIFY_AUTH_TOKEN"]
-    if os.environ.get("SITE_UUID"):
-        out["SITE_UUID"] = os.environ["SITE_UUID"]
-    return out
 
 
 def collect_deploy_files() -> list[str]:
@@ -244,10 +220,6 @@ class Handler(BaseHTTPRequestHandler):
             if not self._authorized(parsed):
                 return self._json({"error": "unauthorized"}, 401)
             return self._json(build_photos.load_site_meta())
-        if path == "/admin/zip":
-            if not self._authorized(parsed):
-                return self._json({"error": "unauthorized"}, 401)
-            return self._generate_zip()
         if path == "/admin/photos-dir":
             if not self._authorized(parsed):
                 return self._json({"error": "unauthorized"}, 401)
@@ -347,35 +319,13 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json({"error": "invalid JSON"}, 400)
             return self._handle_build_stream(payload)
 
-        if path == "/admin/publish":
-            # site UUID can come from secret.txt or JSON body {site: uuid}
+        if path == "/admin/push":
             try:
                 payload = json.loads(body.decode("utf-8")) if body else {}
             except (ValueError, UnicodeDecodeError):
                 payload = {}
-            secrets = load_secret()
-            token = secrets.get("NETLIFY_AUTH_TOKEN", "")
-            site_id = (payload.get("site") or secrets.get("SITE_UUID") or "").strip()
-            if not token:
-                return self._json({"error": "NETLIFY_AUTH_TOKEN missing in secret.txt"}, 500)
-            if not site_id:
-                return self._json({"error": "SITE_UUID missing — add to secret.txt or send {\"site\": uuid}"}, 400)
-            # stream logs via chunked response
-            return self._handle_publish_stream(token, site_id)
-
-        if path == "/admin/manual-zip":
-            try:
-                payload = json.loads(body.decode("utf-8")) if body else {}
-            except (ValueError, UnicodeDecodeError):
-                payload = {}
-            secrets = load_secret()
-            token = secrets.get("NETLIFY_AUTH_TOKEN", "")
-            site_id = (payload.get("site") or secrets.get("SITE_UUID") or "").strip()
-            if not token:
-                return self._json({"error": "NETLIFY_AUTH_TOKEN missing in secret.txt"}, 500)
-            if not site_id:
-                return self._json({"error": "SITE_UUID missing in secret.txt"}, 400)
-            return self._handle_manual_zip(token, site_id)
+            msg = payload.get("message") if isinstance(payload, dict) else ""
+            return self._handle_push(str(msg or ""))
 
         if path == "/admin/delete":
             name = safe_name((parse_qs(parsed.query).get("name") or [""])[0])
@@ -398,63 +348,30 @@ class Handler(BaseHTTPRequestHandler):
 
         self._json({"error": "not found"}, 404)
 
-    def _handle_publish_stream(self, token: str, site_id: str):
-        """Deploy to Netlify and stream logs as text/plain chunks (no extra Netlify polling from client)."""
-        q: queue.Queue[str | None] = queue.Queue()
-        result: dict = {}
-        error: list[str] = []
+    def _handle_push(self, message: str):
+        """git add -A, commit when needed, push origin main. Pages publishes from the push."""
+        log: list[str] = []
 
-        def log_fn(msg: str):
-            q.put(msg + "\n")
-            print(msg)
+        def run(*args: str):
+            p = subprocess.run(["git", *args], cwd=ROOT, capture_output=True, text=True, timeout=180)
+            out = (p.stdout + p.stderr).strip()
+            log.append(f"$ git {' '.join(args)}\n{out}" if out else f"$ git {' '.join(args)}")
+            return p
 
-        def worker():
-            try:
-                import netlify
-                client = netlify.NetlifyClient(token, site_id)
-                deploy_files = collect_deploy_files()
-                import tempfile, shutil
-                with tempfile.TemporaryDirectory() as tmp:
-                    tmp_path = Path(tmp)
-                    for rel_file in deploy_files:
-                        src = ROOT / rel_file
-                        dst = tmp_path / rel_file
-                        dst.parent.mkdir(parents=True, exist_ok=True)
-                        shutil.copy2(src, dst)
-                    report = client.deploy(str(tmp_path), log_fn=log_fn)
-                    result.update(report)
-            except Exception as e:
-                error.append(str(e))
-                q.put(f"ERROR: {e}\n")
-                print(f"[admin] publish failed: {e}")
-            finally:
-                q.put(None)  # end sentinel
-
-        t = threading.Thread(target=worker, daemon=True)
-        t.start()
-
-        # chunked transfer — flush each log line immediately, rate-limit safe (server polls Netlify every 2s only)
-        self.send_response(200)
-        self.send_header("Content-Type", "text/plain; charset=utf-8")
-        self.send_header("Cache-Control", "no-store")
-        self.send_header("Transfer-Encoding", "chunked")
-        self.end_headers()
-        try:
-            while True:
-                item = q.get()
-                if item is None:
-                    break
-                chunk = item.encode("utf-8")
-                self.wfile.write(f"{len(chunk):X}\r\n".encode())
-                self.wfile.write(chunk)
-                self.wfile.write(b"\r\n")
-                self.wfile.flush()
-            # if error, still send final error line already queued; terminate chunked
-            self.wfile.write(b"0\r\n\r\n")
-            self.wfile.flush()
-        except (BrokenPipeError, ConnectionResetError):
-            pass
-        t.join(timeout=1)
+        if run("add", "-A").returncode != 0:
+            return self._json({"ok": False, "log": "\n".join(log)}, 500)
+        committed = False
+        if run("diff", "--cached", "--quiet").returncode != 0:
+            msg = (message or "update from admin").strip()[:200] or "update from admin"
+            if run("commit", "-m", msg).returncode != 0:
+                return self._json({"ok": False, "log": "\n".join(log)}, 500)
+            committed = True
+        if run("push", "origin", "main").returncode != 0:
+            return self._json({"ok": False, "committed": committed, "log": "\n".join(log)}, 500)
+        sha = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT,
+                             capture_output=True, text=True, timeout=30).stdout.strip()
+        print(f"[admin] push ok committed={committed} {sha}")
+        return self._json({"ok": True, "committed": committed, "commit": sha, "log": "\n".join(log)})
 
     def _handle_build_stream(self, args: dict):
         """Run build_photos with streaming logs and progress markers."""
@@ -524,82 +441,6 @@ class Handler(BaseHTTPRequestHandler):
             pass
         t.join(timeout=1)
         print(f"[admin] build rc={rc_holder['rc']}")
-
-    def _handle_manual_zip(self, token: str, site_id: str):
-        """Sync missing images from Netlify, then return deploy.zip for manual drag-drop."""
-        import zipfile
-        from io import BytesIO
-
-        print(f"[admin] manual-zip: syncing missing files from Netlify site {site_id} …")
-        try:
-            import netlify
-            client = netlify.NetlifyClient(token, site_id)
-            remote_paths = client.list_files()
-            if remote_paths:
-                local_set = set(collect_deploy_files())
-                missing: list[str] = []
-                for rp in remote_paths:
-                    rel = rp.lstrip("/")
-                    if not rel or rel in DEPLOY_SKIP or rel.startswith("tools/") or rel.startswith("."):
-                        continue
-                    # only care about deployable missing files (especially images)
-                    if rel in local_set:
-                        continue
-                    if not (ROOT / rel).is_file():
-                        # limit to images and core assets to avoid pulling admin files
-                        if rel.startswith("images/") or rel in ("index.html", "js/photos.js", "js/site.js", "js/main.js", "css/style.css", "favicon.ico", "sw.js"):
-                            missing.append(rel)
-                if missing:
-                    print(f"[admin] manual-zip: downloading {len(missing)} missing files …")
-                    # cap to avoid abuse
-                    for rel in missing[:500]:
-                        dest = ROOT / rel
-                        try:
-                            client.download_file("/" + rel, dest)
-                            print(f"  restored {rel}")
-                        except Exception as e:
-                            print(f"  failed {rel}: {e}")
-                else:
-                    print("[admin] manual-zip: no missing images to download")
-            else:
-                print("[admin] manual-zip: no remote file list (skipping sync)")
-        except Exception as e:
-            print(f"[admin] manual-zip sync warning: {e} — continuing with local files")
-
-        # Generate zip from (now synced) local files
-        buf = BytesIO()
-        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
-            for rel_file in collect_deploy_files():
-                src = ROOT / rel_file
-                zf.write(src, rel_file)
-        data = buf.getvalue()
-        print(f"[admin] manual-zip: generated {len(data)} bytes, {len(collect_deploy_files())} files")
-        self.send_response(200)
-        self.send_header("Content-Type", "application/zip")
-        self.send_header("Content-Length", str(len(data)))
-        self.send_header("Content-Disposition", 'attachment; filename="deploy.zip"')
-        self.send_header("Cache-Control", "no-store")
-        self.end_headers()
-        if self.command != "HEAD":
-            self.wfile.write(data)
-
-    def _generate_zip(self):
-        import zipfile
-        from io import BytesIO
-        buf = BytesIO()
-        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
-            for rel_file in collect_deploy_files():
-                src = ROOT / rel_file
-                zf.write(src, rel_file)
-        data = buf.getvalue()
-        self.send_response(200)
-        self.send_header("Content-Type", "application/zip")
-        self.send_header("Content-Length", str(len(data)))
-        self.send_header("Content-Disposition", 'attachment; filename="deploy.zip"')
-        self.send_header("Cache-Control", "no-store")
-        self.end_headers()
-        if self.command != "HEAD":
-            self.wfile.write(data)
 
     def _admin_data(self) -> dict:
         meta = build_photos.load_meta()
@@ -687,9 +528,6 @@ def main() -> None:
         print(f"Token:   {ADMIN_TOKEN}  (set env ADMIN_TOKEN to change)", flush=True)
     else:
         print("Token:   disabled — admin open on localhost (set env ADMIN_TOKEN to enable)", flush=True)
-    sec = load_secret()
-    if sec.get("NETLIFY_AUTH_TOKEN"):
-        print(f"Netlify: token from secret.txt, site {sec.get('SITE_UUID','')}", flush=True)
     try:
         server.serve_forever()
     except KeyboardInterrupt:

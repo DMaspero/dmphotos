@@ -40,10 +40,8 @@
     cards: document.getElementById("cards"),
     photoCount: document.getElementById("photoCount"),
     // Publish
-    netlifySite: document.getElementById("netlifySite"),
-    saveNetlifyBtn: document.getElementById("saveNetlifyBtn"),
-    publishBtn: document.getElementById("publishBtn"),
-    manualZipBtn: document.getElementById("manualZipBtn"),
+    pushMessage: document.getElementById("pushMessage"),
+    pushBtn: document.getElementById("pushBtn"),
     publishLog: document.getElementById("publishLog"),
   };
 
@@ -608,105 +606,30 @@
 
   /* ---------------- publish ---------------- */
 
-  function saveNetlifyConfig() {
-    var site = el.netlifySite.value.trim();
-    localStorage.setItem("netlify_site", site);
-    status(site ? "Site UUID saved." : "Using site from secret.txt.", true);
-  }
-
-  function loadNetlifyConfig() {
-    try { return { site: localStorage.getItem("netlify_site") || "" }; }
-    catch (e) { return { site: "" }; }
-  }
-
-  function publish() {
-    var site = (loadNetlifyConfig().site || el.netlifySite.value.trim());
-    if (!confirm("Deploy to Netlify?")) return;
-    status("Publishing… streaming logs…");
-    el.publishBtn.disabled = true;
-    if (el.manualZipBtn) el.manualZipBtn.disabled = true;
+  function push() {
+    if (!confirm("Commit everything and push to GitHub?")) return;
+    status("Pushing to GitHub…");
+    el.pushBtn.disabled = true;
     el.publishLog.hidden = false;
     el.publishLog.textContent = "";
-    // streaming: server sends chunked text/plain, one line per log
-    var body = site ? JSON.stringify({ site: site }) : "{}";
-    fetch("/admin/publish", {
+    fetch("/admin/push", {
       method: "POST",
       headers: { "X-Admin-Token": token(), "Content-Type": "application/json" },
-      body: body,
+      body: JSON.stringify({ message: el.pushMessage.value.trim() }),
     }).then(function (res) {
-      if (!res.ok) {
-        return res.text().then(function (t) {
-          var j; try { j = JSON.parse(t); } catch(e) {}
-          throw new Error((j && j.error) || t || ("HTTP " + res.status));
-        });
-      }
-      var reader = res.body.getReader();
-      var decoder = new TextDecoder();
-      function pump() {
-        return reader.read().then(function (r) {
-          if (r.done) {
-            status("Published!", true);
-            el.publishBtn.disabled = false;
-            if (el.manualZipBtn) el.manualZipBtn.disabled = false;
-            return;
-          }
-          el.publishLog.textContent += decoder.decode(r.value, { stream: true });
-          el.publishLog.scrollTop = el.publishLog.scrollHeight;
-          return pump();
-        });
-      }
-      return pump();
+      return res.text().then(function (t) {
+        var j; try { j = JSON.parse(t); } catch(e) {}
+        if (!res.ok) throw new Error((j && (j.error || j.log)) || t || ("HTTP " + res.status));
+        return j;
+      });
+    }).then(function (j) {
+      el.publishLog.textContent = j.log || "";
+      el.publishLog.scrollTop = el.publishLog.scrollHeight;
+      status(j.committed ? ("Pushed " + (j.commit || "") + " — Pages is publishing.") : "Nothing new — already up to date.", true);
     }).catch(function (e) {
-      statusErr("Publish failed: " + e.message);
-      el.publishLog.textContent += "\nERROR: " + e.message + "\n";
-      el.publishBtn.disabled = false;
-      if (el.manualZipBtn) el.manualZipBtn.disabled = false;
-    });
-  }
-
-  function manualZip() {
-    var site = (loadNetlifyConfig().site || el.netlifySite.value.trim());
-    status("Preparing manual zip — syncing missing images from Netlify…");
-    el.manualZipBtn.disabled = true;
-    el.publishBtn.disabled = true;
-    el.publishLog.hidden = false;
-    el.publishLog.textContent = "Syncing with Netlify, downloading missing images…\n";
-    var body = site ? JSON.stringify({ site: site }) : "{}";
-    fetch("/admin/manual-zip", {
-      method: "POST",
-      headers: { "X-Admin-Token": token(), "Content-Type": "application/json" },
-      body: body,
-    }).then(function (res) {
-      if (!res.ok) {
-        return res.text().then(function (t) {
-          var j; try { j = JSON.parse(t); } catch(e) {}
-          throw new Error((j && j.error) || t || ("HTTP " + res.status));
-        });
-      }
-      // Check if response is zip or text log — zip has Content-Type application/zip
-      var ct = res.headers.get("Content-Type") || "";
-      if (ct.indexOf("application/zip") !== -1 || ct.indexOf("octet-stream") !== -1) {
-        return res.blob().then(function (blob) {
-          var url = URL.createObjectURL(blob);
-          var a = document.createElement("a");
-          a.href = url;
-          a.download = "deploy.zip";
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-          setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
-          el.publishLog.textContent += "\nZip ready — download started. Drag it to Netlify Deploys tab.\n";
-          status("Manual zip ready.", true);
-        });
-      }
-      // fallback: text log
-      return res.text().then(function (t){ el.publishLog.textContent += t; status("Done.", true); });
-    }).catch(function (e) {
-      statusErr("Manual zip failed: " + e.message);
-      el.publishLog.textContent += "\nERROR: " + e.message + "\n";
+      statusErr("Push failed: " + e.message);
     }).finally(function(){
-      el.manualZipBtn.disabled = false;
-      el.publishBtn.disabled = false;
+      el.pushBtn.disabled = false;
     });
   }
 
@@ -826,13 +749,7 @@
   if (el2.resetPhotosDirBtn) el2.resetPhotosDirBtn.addEventListener("click", resetPhotosDir);
 
   // Publish
-  el.saveNetlifyBtn.addEventListener("click", saveNetlifyConfig);
-  el.publishBtn.addEventListener("click", publish);
-  if (el.manualZipBtn) el.manualZipBtn.addEventListener("click", manualZip);
-
-  // Load saved Netlify config (site only, token is in secret.txt)
-  var savedCfg = loadNetlifyConfig();
-  if (savedCfg.site) el.netlifySite.value = savedCfg.site;
+  el.pushBtn.addEventListener("click", push);
 
   /* Load immediately. If the server requires a token (ADMIN_TOKEN set), a 401
      will show the login form instead. */

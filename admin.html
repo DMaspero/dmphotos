@@ -120,7 +120,7 @@
     <!-- Photos folder -->
     <section class="panel">
       <h2 class="panel-title">Photos folder</h2>
-      <p class="panel-hint">Where raw photos are stored. Use an external cloud-synced path (e.g. Dropbox, OneDrive) to keep photos in sync across devices without committing them to Git/Netlify. The site repo stays sync'd via GitHub/Netlify.</p>
+      <p class="panel-hint">Where raw photos are stored. Use an external cloud-synced path (e.g. Dropbox, OneDrive) to keep photos in sync across devices without committing them to Git. The site repo stays sync'd via GitHub.</p>
       <div class="form-grid">
         <label class="field full">
           <span class="field-label">Path — absolute (C:\Cloud\Photos) or relative to site root (photos)</span>
@@ -166,18 +166,16 @@
 
     <!-- Publish -->
     <section class="panel">
-      <h2 class="panel-title">Publish to Netlify</h2>
-      <p class="panel-hint">Token + Site UUID are read from <code>secret.txt</code> (never deployed). You can override the site below.</p>
+      <h2 class="panel-title">Publish to GitHub Pages</h2>
+      <p class="panel-hint">Commits everything and pushes to <code>main</code> — GitHub Actions publishes the site automatically.</p>
       <div class="form-grid">
-        <label class="field">
-          <span class="field-label">Site UUID (override, optional)</span>
-          <input type="text" id="netlifySite" placeholder="from secret.txt">
+        <label class="field full">
+          <span class="field-label">Commit message</span>
+          <input type="text" id="pushMessage" placeholder="update from admin">
         </label>
       </div>
       <div class="panel-actions">
-        <button type="button" id="saveNetlifyBtn">Save site</button>
-        <button type="button" id="publishBtn" class="primary">Publish</button>
-        <button type="button" id="manualZipBtn">Manual upload</button>
+        <button type="button" id="pushBtn" class="primary">Push to GitHub</button>
       </div>
       <pre class="build-log" id="publishLog" hidden></pre>
     </section>

@@ -12,3 +12,7 @@ netlify.json
 
 # generated deploy artifact
 deploy.zip
+
+# local-only junk (never commit)
+serve.log
+__pycache__/

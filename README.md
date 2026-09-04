@@ -2,7 +2,7 @@
 
 Single-page, no-framework portfolio. Plain `index.html` + `css/style.css` + `js/main.js` + generated `js/photos.js` / `js/site.js`. Originals in `photos/` (configurable, see below) are never served — `pixi run build` resizes to `images/web/` (2048px) + `images/thumbs/` (900px) with WebP, watermark and EXIF.
 
-Live: `https://dmphotos.netlify.app` (moving to `https://dmaspero.github.io/dmphotos/`) — GitHub: `https://github.com/DMaspero/dmphotos` (make it public, then Settings → Pages → Deploy from branch `gh-pages`; auto-published on push by `.github/workflows/pages.yml`).
+Live: `https://dmaspero.github.io/dmphotos/` — GitHub: `https://github.com/DMaspero/dmphotos` (public; auto-published on push by `.github/workflows/pages.yml`).
 
 ## Requirements
 
@@ -39,7 +39,7 @@ Positions: `top-left|top-center|top-right|center-left|center|center-right|bottom
 - File: `.photos_dir` at repo root containing a single path line (git-ignored, per-device — edit in Admin → Photos folder)
 - Admin panel → **Photos folder** (preferred — creates `.photos_dir` automatically)
 
-This lets the repo stay sync'd via GitHub/Netlify while raw photos live in a cloud-synced folder (Dropbox/OneDrive/Google Drive) outside the repo.
+This lets the repo stay sync'd via GitHub while raw photos live in a cloud-synced folder (Dropbox/OneDrive/Google Drive) outside the repo.
 
 ## Run the site
 
@@ -61,14 +61,7 @@ Never edit `js/photos.js` or `js/site.js` by hand — they are generated.
 
 ## Secrets
 
-Private `secret.txt` at repo root (git-ignored, never deployed):
-
-```
-NETLIFY_AUTH_TOKEN='nfp_xxx'
-SITE_UUID='89568afc-1e3b-4fea-b447-02c222ab265d'
-```
-
-Also read from `env NETLIFY_AUTH_TOKEN` / `SITE_UUID`. Create a Netlify personal token (no expiry) and copy the site **UUID** from Netlify Dashboard → Site settings → General → Site information.
+Local-only `secret.txt` at repo root (git-ignored, never deployed) holds legacy Netlify tokens (`NETLIFY_AUTH_TOKEN`, `SITE_UUID`) — no longer used since the move to GitHub Pages. Safe to delete.
 
 ## Admin panel (`/admin`)
 
@@ -77,7 +70,7 @@ Local-only. By default no token (localhost). Set `ADMIN_TOKEN=... pixi run serve
 Top bar: `Save changes` (saves all category/photo edits via `POST /admin/meta`, triggers rebuild) and `Sync meta`.
 
 #### Photos folder
-Exposed at the top of the panel. Shows `Current: /absolute/path (will be created)` and an input for the path (absolute `C:\Cloud\Photos` or relative `photos`). **Save folder** → `POST /admin/photos-dir` writes `.photos_dir` (git-ignored, per-device) and creates the dir; **Reset to default** deletes `.photos_dir` → `photos/`. Also available as `PHOTOS_DIR` env or `--photos-dir` flag for CLI. Uploads/deletes respect this setting; deploy zips exclude the photos folder whether inside or outside the repo.
+Exposed at the top of the panel. Shows `Current: /absolute/path (will be created)` and an input for the path (absolute `C:\Cloud\Photos` or relative `photos`). **Save folder** → `POST /admin/photos-dir` writes `.photos_dir` (git-ignored, per-device) and creates the dir; **Reset to default** deletes `.photos_dir` → `photos/`. Also available as `PHOTOS_DIR` env or `--photos-dir` flag for CLI. Uploads/deletes respect this setting; publishing excludes the photos folder whether inside or outside the repo.
 
 #### Site Content
 `Title` (nav + `<title>`), `Kicker` (hero big uppercase title), `Footer`, `Description` (meta). → **Save site content** (`POST /admin/site` → `site.meta.json` → `js/site.js`).
@@ -94,13 +87,8 @@ List of chips with counts. Inline rename (change → enter), `×` to delete (pho
 #### Photos
 `Filter by filename` + category chips (All + per-category). Each card: thumb, `category` select, `tags` (comma-separated, lowercased), `featured` checkbox (drives hero carousel), `Delete photo` (removes original + `images/web|thumbs` + rebuilds via `POST /admin/delete?name=`).
 
-#### Publish to Netlify
-`Site UUID (override, optional)` — if empty uses `secret.txt`. **Save site** stores override in `localStorage`.
-
-- **Publish** — `POST /admin/publish` → server reads `secret.txt`, builds digest manifest `{"/path": sha1}` (chunked SHA1), `POST /sites/{id}/deploys` (sync for <5k files, `async:true` only for >5k to avoid 30s timeout), Netlify returns `required` (differential — only changed files), uploads 5 concurrent `PUT /deploys/{id}/files{path}` (handles `429` + `X-RateLimit-Remaining`), polls `GET /deploys/{id}` until `ready`. Logs stream chunked (`text/plain`) to `publishLog`. Rate limits: 3 deploys/min, 100/day, 500 file PUTs/min.
-- **Manual upload** — `POST /admin/manual-zip` → lists remote `GET /sites/{id}/files`, downloads any `images/*` missing locally from the live site URL (no API rate cost), then zips `collect_deploy_files()` (excludes `admin.html`, `tools/`, `photos/`, `secret.txt`, etc.) and downloads `deploy.zip` for drag-drop to Netlify Deploys tab. Fallback when API publish fails.
-
-Check server stdout for `Netlify: token from secret.txt, site …` on `pixi run serve`.
+#### Publish to GitHub Pages
+Commit message (optional, defaults to `update from admin`) → **Push to GitHub** (`POST /admin/push` → server runs `git add -A`, commits when needed, `push origin main`). GitHub Actions (`.github/workflows/pages.yml`) publishes the site automatically; progress in the `publishLog` box.
 
 ## Site features
 
@@ -111,7 +99,7 @@ Check server stdout for `Netlify: token from secret.txt, site …` on `pixi run 
 
 ```
 index.html  admin.html  css/  js/  images/web|thumbs  photos/  photos.meta.json  site.meta.json
-tools/build_photos.py  tools/serve.py  tools/netlify.py  secret.txt  .photos_dir  pixi.toml  favicon.ico  sw.js
+tools/build_photos.py  tools/serve.py  pixi.toml  favicon.ico  sw.js
 ```
 
 Deploy **only** `index.html`, `css/`, `js/`, `images/`, `favicon.ico`, `sw.js` — exclude `admin.html`, `css/admin.css`, `js/admin.js`, `tools/`, `photos/` (or custom external folder), `secret.txt`, `.photos_dir`, `.pixi/`, `deploy.zip`.
@@ -120,5 +108,4 @@ Deploy **only** `index.html`, `css/`, `js/`, `images/`, `favicon.ico`, `sw.js` �
 
 - `Warning: no embedded PNG…` → now handled via `cairosvg` vector render; install with `pixi add cairosvg`.
 - `favicon.ico 404` → generated via Pillow on build.
-- `required 0 but state prepared` → was `async:true` on small sites; now sync for <5k files — retry `Publish`.
 - `401 unauthorized` on admin → set `ADMIN_TOKEN` correctly or clear `sessionStorage`.
