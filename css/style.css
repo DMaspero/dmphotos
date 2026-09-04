@@ -847,8 +847,10 @@ img, picture { -webkit-user-drag: none; user-select: none; -webkit-user-select: 
     display: flex;
     gap: 14px;
     justify-content: center;
+    align-items: center;
     margin-top: 14px;
   }
+  .lb-like-wrap { position: static; }
   .lb-prev, .lb-next { position: static; transform: none; }
   .lb-caption { padding: 0 16px; }
 }
