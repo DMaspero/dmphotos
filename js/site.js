@@ -1,6 +1,6 @@
 const SITE = {
   "title": "D.M. Photography",
   "kicker": "My favourite shots",
-  "footer": "Davide Maspero",
+  "footer": "Davide Maspero | dav1989@gmail.com",
   "description": "My best shots, taken in the last few years"
 };
