@@ -105,7 +105,7 @@ Check server stdout for `Netlify: token from secret.txt, site …` on `pixi run 
 ## Site features
 
 - Hero carousel: all `featured` photos, larger cards (`360×240`), infinite marquee (paused on hover, scrollable with `prefers-reduced-motion`), click → lightbox.
-- Gallery: category pills + tag cloud (filtered by current view), masonry grid with like counts (Firebase Realtime DB, blue `#3b82f6`, local `liked` set), EXIF bar in lightbox, dark mode toggle, hamburger nav.
+- Gallery: category pills + tag cloud (filtered by current view), masonry grid with like counts (Firebase Realtime DB, blue `#3b82f6`, local `liked` set), EXIF bar in lightbox, dark mode toggle.
 
 ## Project structure
 

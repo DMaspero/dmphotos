@@ -794,32 +794,6 @@
     });
   })();
 
-  /* ---------------- hamburger ---------------- */
-
-  (function initHamburger() {
-    var btn = document.getElementById("hamburger");
-    var nav = document.getElementById("siteNav");
-    if (!btn || !nav) return;
-    function closeNav() {
-      nav.classList.remove("is-open");
-      btn.classList.remove("is-open");
-      btn.setAttribute("aria-expanded", "false");
-    }
-    btn.addEventListener("click", function () {
-      var open = nav.classList.toggle("is-open");
-      btn.classList.toggle("is-open", open);
-      btn.setAttribute("aria-expanded", String(open));
-    });
-    nav.querySelectorAll("a").forEach(function (a) {
-      a.addEventListener("click", closeNav);
-    });
-    document.addEventListener("click", function (e) {
-      if (nav.classList.contains("is-open") && !nav.contains(e.target) && e.target !== btn) {
-        closeNav();
-      }
-    });
-  })();
-
   /* ---------------- scroll to top ---------------- */
 
   (function initScrollTop() {
