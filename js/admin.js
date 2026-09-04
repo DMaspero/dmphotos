@@ -625,7 +625,7 @@
     }).then(function (j) {
       el.publishLog.textContent = j.log || "";
       el.publishLog.scrollTop = el.publishLog.scrollHeight;
-      status(j.committed ? ("Pushed " + (j.commit || "") + " — Pages is publishing.") : "Nothing new — already up to date.", true);
+      status(j.committed ? ("Pushed " + (j.commit || "") + " — live at https://dmaspero.github.io/dmphotos/ in ~1 min.") : "Nothing new — already up to date.", true);
     }).catch(function (e) {
       statusErr("Push failed: " + e.message);
     }).finally(function(){
