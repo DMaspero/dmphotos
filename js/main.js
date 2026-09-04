@@ -77,10 +77,11 @@
     likedByUser[filename] = !wasLiked;
     try { localStorage.setItem("liked", JSON.stringify(likedByUser)); } catch (e) {}
 
-    // Update Firebase (increment/decrement)
+    // Update Firebase (increment/decrement, clamped at 0: local liked-state
+    // can desync from the counter, e.g. after the database was wiped).
     if (likesRef) {
       likesRef.child(encodeKey(filename)).transaction(function (cur) {
-        return (cur || 0) + (wasLiked ? -1 : 1);
+        return Math.max(0, (cur || 0) + (wasLiked ? -1 : 1));
       }).catch(function (err) {
         console.warn("Like sync failed:", err);
       });
